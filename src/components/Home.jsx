@@ -40,10 +40,15 @@ const Home = () => {
     const [container, setContainer] = useState(null);
     const [isSubmitAllowed, setIsSubmitAllowed] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showModalConfirmWeight, setShowModalConfirmWeight] = useState(false);
     const toggleModal = () => {
 	freezeNeto(!isFreeze);
         setShowModal(!showModal);
     };
+
+    const toggleModalConfirm = () => {
+            setShowModalConfirmWeight(!showModalConfirmWeight);
+        };
 
     function classNames(...classes) {
         return classes.filter(Boolean).join(' ')
@@ -147,11 +152,18 @@ const Home = () => {
             })
             .catch(err => console.error(err));
     };
-    useEffect(() => {
+    /*useEffect(() => {
         if (container && container.containerId)
             sendRollingDoorUp();
-    }, [container]);
+    }, [container]);*/
     const handleTransaksi = () => {
+        const binWeight = container?.weightbin ?? 0;
+        const totalWeight = neto + binWeight;
+
+        if (totalWeight > 100) {
+            setErrorMessage('bin penuh.');
+            return;
+        }
         axios.post("http://localhost:5000/SaveTransaksi", {
             payload: {
                 idContainer: container.containerId,
@@ -165,8 +177,33 @@ const Home = () => {
             setIsSubmitAllowed(false);
             setScanData('');
             toggleModal();
+            CheckBinCapacity();
         });
 
+    }
+
+    const CheckBinCapacity = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/CheckBinCapacity', {
+                type_waste: container.waste.bin[0].type_waste,
+                neto: neto
+            }).then(x => {
+
+            });
+             console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const ConfirmModal = async () => {
+        try {
+    
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
     const closeRollingDoor = async () => {
         try {
@@ -207,7 +244,7 @@ const Home = () => {
                     alert("Mismatch Name: " + scanData);
                     return;
                 }
-                closeRollingDoor();
+                //closeRollingDoor();
                 updateBinWeight();
             }
             else {
@@ -413,6 +450,32 @@ const Home = () => {
                                     <p>Data Timbangan Sudah Sesuai?</p>
                                     <div className="flex justify-center mt-5">
                                         <button type="button" onClick={handleTransaksi} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-2 rounded">Ok</button>
+                                        <button type="button" onClick={handleCancel} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <div className='flex justify-start'>
+                {showModalConfirmWeight && (
+                    <div className="fixed z-10 inset-0 overflow-y-auto">
+                        <div className="flex items-center justify-center min-h-screen">
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+                            <div className="bg-white rounded p-8 max-w-md mx-auto z-50">
+                                <div className="text-center mb-4">
+
+                                </div>
+                                <form>
+                                    <Typography variant="h4" align="center" gutterBottom>
+                                        {neto}
+                                    </Typography>
+                                    <p>Ingin Menimbang lagi ??</p>
+                                    <div className="flex justify-center mt-5">
+                                        <button type="button" onClick={ConfirmModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-2 rounded">Ok</button>
                                         <button type="button" onClick={handleCancel} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Cancel</button>
                                     </div>
                                 </form>
