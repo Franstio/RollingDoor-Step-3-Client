@@ -29,6 +29,7 @@ const Home = () => {
     const [isFreeze,freezeNeto] = useState(false);
     const [isFinalStep, setFinalStep] = useState(false);
     const [containerName, setContainerName] = useState('');
+    const [rollingDoorId,setRollingDoorId] = useState(-1);
     //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
     //    const socket = null;
     const navigation = [
@@ -101,7 +102,7 @@ const Home = () => {
         try {
             console.log(container);
             const response = await axios.post(`http://localhost:5000/rollingdoorUp`, {
-                idRollingDoor: container.containerId
+                idRollingDoor: rollingDoorId
             });
             console.log(response.data);
         } catch (error) {
@@ -152,43 +153,54 @@ const Home = () => {
             })
             .catch(err => console.error(err));
     };
-    /*useEffect(() => {
-        if (container && container.containerId)
+    useEffect(() => {
+        if (rollingDoorId > -1)
             sendRollingDoorUp();
-    }, [container]);*/
-    const handleTransaksi = () => {
+    }, [rollingDoorId]);
+    const handleSubmit = () => {
         const binWeight = container?.weightbin ?? 0;
         const totalWeight = neto + binWeight;
 
         if (totalWeight > 100) {
-            setErrorMessage('bin penuh.');
+           // setErrorMessage('bin penuh.');
             return;
         }
-        axios.post("http://localhost:5000/SaveTransaksi", {
+	CheckBinCapacity()
+
+    }
+    const saveTransaksi = ()=>{
+	axios.post("http://localhost:5000/SaveTransaksi", {
             payload: {
                 idContainer: container.containerId,
                 badgeId: user.badgeId,
                 idWaste: container.idWaste,
                 neto: neto
-                //		createdAt: new Date().toISOString().replace('T', ' ')
+                //              createdAt: new Date().toISOString().replace('T', ' ')
             }
         }).then(res => {
             setFinalStep(true);
             setIsSubmitAllowed(false);
             setScanData('');
             toggleModal();
-            CheckBinCapacity();
+//            CheckBinCapacity();
         });
-
     }
 
     const CheckBinCapacity = async () => {
         try {
+	   console.log(container);
             const response = await axios.post('http://localhost:5000/CheckBinCapacity', {
                 type_waste: container.waste.bin[0].type_waste,
                 neto: neto
             }).then(x => {
-
+		const res = x.data;
+		if (!res.success)
+		{
+			alert(res.message);
+			return;
+		}
+		setRollingDoorId(res.bin.id);
+		saveTransaksi();
             });
              console.log(response);
         }
@@ -208,7 +220,7 @@ const Home = () => {
     const closeRollingDoor = async () => {
         try {
             const response = await axios.post(`http://localhost:5000/rollingdoorDown`, {
-                idRollingDoor: container.containerId,
+                idRollingDoor: rollingDoorId,
             }).then(x => {
             });
             console.log(response);
@@ -244,7 +256,7 @@ const Home = () => {
                     alert("Mismatch Name: " + scanData);
                     return;
                 }
-                //closeRollingDoor();
+                closeRollingDoor();
                 updateBinWeight();
             }
             else {
@@ -449,7 +461,7 @@ const Home = () => {
                                     </Typography>
                                     <p>Data Timbangan Sudah Sesuai?</p>
                                     <div className="flex justify-center mt-5">
-                                        <button type="button" onClick={handleTransaksi} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-2 rounded">Ok</button>
+                                        <button type="button" onClick={handleSubmit} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-2 rounded">Ok</button>
                                         <button type="button" onClick={handleCancel} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Cancel</button>
                                     </div>
                                 </form>
