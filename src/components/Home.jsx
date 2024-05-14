@@ -26,10 +26,10 @@ const Home = () => {
     const [scanData, setScanData] = useState('');
     const [username, setUsername] = useState('');
     const [neto, setNeto] = useState(0);
-    const [isFreeze,freezeNeto] = useState(false);
+    const [isFreeze, freezeNeto] = useState(false);
     const [isFinalStep, setFinalStep] = useState(false);
     const [containerName, setContainerName] = useState('');
-    const [rollingDoorId,setRollingDoorId] = useState(-1);
+    const [rollingDoorId, setRollingDoorId] = useState(-1);
     //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
     //    const socket = null;
     const navigation = [
@@ -42,14 +42,15 @@ const Home = () => {
     const [isSubmitAllowed, setIsSubmitAllowed] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showModalConfirmWeight, setShowModalConfirmWeight] = useState(false);
+    const [wasteId, setWasteId] = useState(null);
     const toggleModal = () => {
-	freezeNeto(!isFreeze);
+        freezeNeto(!isFreeze);
         setShowModal(!showModal);
     };
 
-    const toggleModalConfirm = () => {
-            setShowModalConfirmWeight(!showModalConfirmWeight);
-        };
+    /*const toggleModalConfirm = () => {
+        setShowModalConfirmWeight(!showModalConfirmWeight);
+    };*/
 
     function classNames(...classes) {
         return classes.filter(Boolean).join(' ')
@@ -81,7 +82,7 @@ const Home = () => {
     useEffect(() => {
         socket.on('data', (weight50Kg) => {
             try {
-                //            console.log(weight50Kg)
+                //console.log(weight50Kg)
                 weight50Kg.weight50Kg = weight50Kg && weight50Kg.weight50Kg ? parseFloat(weight50Kg.weight50Kg.replace("=", "") ?? '0') : 0;
                 //  console.log(weight50Kg)
                 setScales50Kg(weight50Kg);
@@ -93,9 +94,9 @@ const Home = () => {
         const weight = Scales50Kg?.weight50Kg ?? 0;
         const binWeight = container?.weightbin ?? 0;
         //	console.log({w:weight,bin:binWeight,w2:Scales50Kg,c:container});
-	if (isFreeze)
-		return
-	setNeto(weight)
+        if (isFreeze)
+            return
+        setNeto(weight)
     }, [Scales50Kg])
 
     async function sendRollingDoorUp() {
@@ -137,6 +138,10 @@ const Home = () => {
                     alert(res.data.error);
                 } else {
                     if (res.data.container) {
+                        if (res.data.container.idWaste != wasteId && wasteId != null) {
+                            alert("Waste  Mismatch");
+                            return;
+                        }
                         setContainer(res.data.container);
                         setScanData('');
                         setIsSubmitAllowed(true);
@@ -159,17 +164,17 @@ const Home = () => {
     }, [rollingDoorId]);
     const handleSubmit = () => {
         const binWeight = container?.weightbin ?? 0;
-        const totalWeight = neto + binWeight;
-
+        const totalWeight = parseFloat(neto) + parseFloat(binWeight);
+        console.log(binWeight);
         if (totalWeight > 100) {
-           // setErrorMessage('bin penuh.');
+            // setErrorMessage('bin penuh.');
             return;
         }
-	CheckBinCapacity()
+        CheckBinCapacity();
 
     }
-    const saveTransaksi = ()=>{
-	axios.post("http://localhost:5000/SaveTransaksi", {
+    const saveTransaksi = () => {
+        axios.post("http://localhost:5000/SaveTransaksi", {
             payload: {
                 idContainer: container.containerId,
                 badgeId: user.badgeId,
@@ -178,50 +183,44 @@ const Home = () => {
                 //              createdAt: new Date().toISOString().replace('T', ' ')
             }
         }).then(res => {
-            setFinalStep(true);
+            setWasteId(container.idWaste);
             setIsSubmitAllowed(false);
             setScanData('');
             toggleModal();
-//            CheckBinCapacity();
+            setShowModalConfirmWeight(true);
+            // CheckBinCapacity();
         });
     }
 
     const CheckBinCapacity = async () => {
         try {
-	   console.log(container);
+            console.log(container);
             const response = await axios.post('http://localhost:5000/CheckBinCapacity', {
-                type_waste: container.waste.bin[0].type_waste,
+                type_waste: container.idWaste,
                 neto: neto
             }).then(x => {
-		const res = x.data;
-		if (!res.success)
-		{
-			alert(res.message);
-			return;
-		}
-		setRollingDoorId(res.bin.id);
-		saveTransaksi();
+                const res = x.data;
+                if (!res.success) {
+                    alert(res.message);
+                    return;
+                }
+                setRollingDoorId(res.bin.id);
+                saveTransaksi();
             });
-             console.log(response);
+            console.log(response);
         }
         catch (error) {
             console.error(error);
         }
     }
 
-    const ConfirmModal = async () => {
-        try {
-    
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
     const closeRollingDoor = async () => {
         try {
             const response = await axios.post(`http://localhost:5000/rollingdoorDown`, {
                 idRollingDoor: rollingDoorId,
             }).then(x => {
+                setWasteId(null);
+                updateBinWeight();
             });
             console.log(response);
         } catch (error) {
@@ -247,17 +246,38 @@ const Home = () => {
             console.error(error);
         }
     }
+
+    const updateBinWeightConfirm = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/UpdateBinWeight', {
+                binId: container.waste.bin[0].id,
+                neto: neto
+            }).then(x => {
+                setScanData('');
+                setContainer(null);
+                freezeNeto(false);
+                setFinalStep(false);
+                setIsSubmitAllowed(false);
+            });
+
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             if (user == null)
                 handleScan();
             else if (isFinalStep) {
-                if (scanData != container.waste.bin[0].name) {
+                console.log(wasteId);
+                console.log(container.waste.bin.filter(x => x.type_waste == wasteId));
+                if (container.waste.bin.filter(x => x.type_waste == wasteId).length < 1) {
                     alert("Mismatch Name: " + scanData);
                     return;
                 }
                 closeRollingDoor();
-                updateBinWeight();
+
             }
             else {
                 handleScan1();
@@ -267,6 +287,17 @@ const Home = () => {
 
     const handleCancel = () => {
         toggleModal();
+    };
+    const handleCancelConfirmModal = () => {
+        setShowModalConfirmWeight(false);
+        setFinalStep(true);
+        //        updateBinWeight();
+        //setWasteId(null);
+    }
+
+    const ConfirmModal = () => {
+        setShowModalConfirmWeight(false);
+        updateBinWeightConfirm();
     };
 
 
@@ -288,7 +319,7 @@ const Home = () => {
                                             <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                                         )}
                                     </Disclosure.Button>
-                                </div>
+                                </div >
                                 <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                                     <div className="flex flex-shrink-0 items-center">
                                         <img
@@ -378,8 +409,8 @@ const Home = () => {
                                         </Transition>
                                     </Menu>
                                 </div>
-                            </div>
-                        </div>
+                            </div >
+                        </div >
 
                         <Disclosure.Panel className="sm:hidden">
                             <div className="space-y-1 px-2 pb-3 pt-2">
@@ -401,7 +432,7 @@ const Home = () => {
                         </Disclosure.Panel>
                     </>
                 )}
-            </Disclosure>
+            </Disclosure >
             <div className='bg-[#f4f6f9] p-5'>
                 <div className="grid grid-cols-3 grid-flow-col gap-5">
                     <div className="row-span-2 col-span-2">
@@ -457,7 +488,7 @@ const Home = () => {
                                 </div>
                                 <form>
                                     <Typography variant="h4" align="center" gutterBottom>
-                                        {neto}
+                                        {neto}Kg
                                     </Typography>
                                     <p>Data Timbangan Sudah Sesuai?</p>
                                     <div className="flex justify-center mt-5">
@@ -482,13 +513,13 @@ const Home = () => {
 
                                 </div>
                                 <form>
-                                    <Typography variant="h4" align="center" gutterBottom>
-                                        {neto}
+                                    <Typography variant="h6" align="center" gutterBottom>
+                                        <p>Data Timbangan Telah DiSave!</p>
                                     </Typography>
                                     <p>Ingin Menimbang lagi ??</p>
                                     <div className="flex justify-center mt-5">
                                         <button type="button" onClick={ConfirmModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-2 rounded">Ok</button>
-                                        <button type="button" onClick={handleCancel} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Cancel</button>
+                                        <button type="button" onClick={handleCancelConfirmModal} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Cancel</button>
                                     </div>
                                 </form>
                             </div>
@@ -500,7 +531,7 @@ const Home = () => {
                 <p>Server Status: 192.168.1.5 Online</p>
                 <p>Status PLC : Online</p>
             </footer>
-        </main>
+        </main >
     );
 };
 
