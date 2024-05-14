@@ -26,6 +26,7 @@ const Home = () => {
     const [scanData, setScanData] = useState('');
     const [username, setUsername] = useState('');
     const [neto, setNeto] = useState(0);
+    const [isFreeze,freezeNeto] = useState(false);
     const [isFinalStep, setFinalStep] = useState(false);
     const [containerName, setContainerName] = useState('');
     //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
@@ -40,6 +41,7 @@ const Home = () => {
     const [isSubmitAllowed, setIsSubmitAllowed] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const toggleModal = () => {
+	freezeNeto(!isFreeze);
         setShowModal(!showModal);
     };
 
@@ -85,7 +87,9 @@ const Home = () => {
         const weight = Scales50Kg?.weight50Kg ?? 0;
         const binWeight = container?.weightbin ?? 0;
         //	console.log({w:weight,bin:binWeight,w2:Scales50Kg,c:container});
-        setNeto(weight)
+	if (isFreeze)
+		return
+	setNeto(weight)
     }, [Scales50Kg])
 
     async function sendRollingDoorUp() {
@@ -160,6 +164,7 @@ const Home = () => {
             setFinalStep(true);
             setIsSubmitAllowed(false);
             setScanData('');
+            toggleModal();
         });
 
     }
