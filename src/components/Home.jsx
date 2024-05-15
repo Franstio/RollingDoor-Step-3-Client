@@ -44,7 +44,7 @@ const Home = () => {
     const [showModalConfirmWeight, setShowModalConfirmWeight] = useState(false);
     const [wasteId, setWasteId] = useState(null);
     const toggleModal = () => {
-        freezeNeto(!isFreeze);
+        freezeNeto(true);
         setShowModal(!showModal);
     };
 
@@ -160,7 +160,7 @@ const Home = () => {
     };
     useEffect(() => {
         if (rollingDoorId > -1)
-            sendRollingDoorUp();
+	        sendRollingDoorUp();
     }, [rollingDoorId]);
     const handleSubmit = () => {
         const binWeight = container?.weightbin ?? 0;
@@ -230,13 +230,15 @@ const Home = () => {
     const updateBinWeight = async () => {
         try {
             const response = await axios.post('http://localhost:5000/UpdateBinWeight', {
-                binId: container.waste.bin[0].id,
+                binId: rollingDoorId,
                 neto: neto
             }).then(x => {
+		setRollingDoorId(-1);
                 setScanData('');
                 setUser(null);
                 setContainer(null);
                 setNeto(0);
+		freezeNeto(false);
                 setFinalStep(false);
                 setIsSubmitAllowed(false);
             });
@@ -250,10 +252,11 @@ const Home = () => {
     const updateBinWeightConfirm = async () => {
         try {
             const response = await axios.post('http://localhost:5000/UpdateBinWeight', {
-                binId: container.waste.bin[0].id,
+                binId: rollingDoorId,
                 neto: neto
             }).then(x => {
-                setScanData('');
+                setRollingDoorId(-1);
+		setScanData('');
                 setContainer(null);
                 freezeNeto(false);
                 setFinalStep(false);
@@ -287,6 +290,7 @@ const Home = () => {
 
     const handleCancel = () => {
         toggleModal();
+	freezeNeto(false);
     };
     const handleCancelConfirmModal = () => {
         setShowModalConfirmWeight(false);
