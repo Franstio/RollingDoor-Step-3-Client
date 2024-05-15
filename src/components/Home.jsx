@@ -236,7 +236,7 @@ const Home = () => {
                 idRollingDoor: rollingDoorId,
             }).then(x => {
                 setWasteId(null);
-                updateBinWeight();
+//                updateBinWeight();
             });
             console.log(response);
         } catch (error) {
@@ -249,6 +249,7 @@ const Home = () => {
                 binId: rollingDoorId,
                 neto: neto
             }).then(x => {
+        closeRollingDoor();
 		setRollingDoorId(-1);
                 setScanData('');
                 setUser(null);
@@ -295,7 +296,7 @@ const Home = () => {
                     alert("Mismatch Name: " + scanData);
                     return;
                 }
-                closeRollingDoor();
+                updateBinWeight();
 
             }
             else {
