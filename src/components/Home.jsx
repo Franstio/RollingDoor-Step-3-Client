@@ -110,7 +110,19 @@ const Home = () => {
             console.error(error);
         }
     }
-
+    const triggerAvailableBin = async (valueIsOpen,wasteId)=>{
+        try
+        {
+            const response  = await axios.post("http://localhost:5000/triggerAvailbleBin",{
+                wasteId : wasteId,
+                valueIsOpen: valueIsOpen
+            });
+            console.log(response);
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
     const handleScan = () => {
         axios.post('http://localhost:5000/ScanBadgeid', { badgeId: scanData })
             .then(res => {
@@ -143,6 +155,7 @@ const Home = () => {
                             return;
                         }
                         setContainer(res.data.container);
+                        triggerAvailableBin(true,res.data.container.idWaste);
                         setScanData('');
                         setIsSubmitAllowed(true);
 
@@ -160,7 +173,10 @@ const Home = () => {
     };
     useEffect(() => {
         if (rollingDoorId > -1)
+        {
 	        sendRollingDoorUp();
+            triggerAvailableBin(false,container.idWaste);
+        }
     }, [rollingDoorId]);
     const handleSubmit = () => {
         const binWeight = container?.weightbin ?? 0;
