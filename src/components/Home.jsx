@@ -80,6 +80,7 @@ const Home = () => {
     };
 
     useEffect(() => {
+	socket.emit('connectScale');
         socket.on('data', (weight50Kg) => {
             try {
                 //console.log(weight50Kg)
@@ -93,6 +94,7 @@ const Home = () => {
     useEffect(() => {
         const weight = Scales50Kg?.weight50Kg ?? 0;
         const binWeight = container?.weightbin ?? 0;
+	//weight = weight - binWeight;
         //	console.log({w:weight,bin:binWeight,w2:Scales50Kg,c:container});
         if (isFreeze)
             return
