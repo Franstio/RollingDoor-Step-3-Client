@@ -538,6 +538,7 @@ const Home = () => {
                                 <form>
                                     <Typography variant="h6" align="center" gutterBottom>
                                         <p>Data Timbangan Telah DiSave!</p>
+                                        <p>Rolling Door {rollingDoorId} Telah Dibuka!</p>
                                     </Typography>
                                     <p>Ingin Menimbang lagi ??</p>
                                     <div className="flex justify-center mt-5">
