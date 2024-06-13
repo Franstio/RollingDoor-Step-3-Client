@@ -327,7 +327,7 @@ const Home = () => {
         try {
             //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const response = await apiClient.post(`http://192.168.18.85/api/pid/activityLogTempbyPc`, {
+            const response = await axios.post(`http://192.168.18.85/api/pid/activityLogTempbyPc`, {
                 badgeno: "123",
                 stationname: "STEP 3 COLLECTION",
                 frombin: "2-PCL-SP-WR-1",
@@ -353,7 +353,7 @@ const Home = () => {
         try {
             //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const response = await apiClient.post(`http://192.168.18.85/api/pid/activityLogTempbyPc`, {
+            const response = await axios.post(`http://192.168.18.85/api/pid/activityLogbypc`, {
                 //badgeno: "123",
                 stationname: "STEP 3 COLLECTION",
                 frombin: "2-PCL-SP-WR-1",
