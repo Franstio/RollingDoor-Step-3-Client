@@ -250,7 +250,7 @@ const Home = () => {
             const response = await axios.post('http://localhost:5000/UpdateBinWeight', {
                 binId: rollingDoorId,
                 neto: neto
-            }).then(x => {
+            });
         closeRollingDoor();
 		setRollingDoorId(-1);
                 setScanData('');
@@ -260,9 +260,8 @@ const Home = () => {
 		freezeNeto(false);
                 setFinalStep(false);
                 setIsSubmitAllowed(false);
-                sendDataPanasonicServer();
-            });
-
+                await sendDataPanasonicServer();
+                await sendDataPanasonicServer1();
         }
         catch (error) {
             console.error(error);
@@ -336,6 +335,32 @@ const Home = () => {
                 activity: 'Movement by System',
                 filename: null,
                 postby: "Local Step 3"
+
+            });
+            console.log(response)
+            if (response.status != 200) {
+                console.log(response);
+                return;
+            }
+            
+        }
+        catch (error) {
+            console.log(error);
+        }
+    };
+
+    const sendDataPanasonicServer1 = async () => {
+        try {
+            //console.log(badgeno, stationname, frombinname,tobinname,activity);
+            //let stationname = containerName.split('-').slice(0, 3).join('-');
+            const response = await apiClient.post(`http://192.168.18.85/api/pid/activityLogTempbyPc`, {
+                //badgeno: "123",
+                stationname: "STEP 3 COLLECTION",
+                frombin: "2-PCL-SP-WR-1",
+                //weight: "10",
+                tobin: "3-IND-SP-12",
+                //filename: null,
+                //postby: "Local Step 3"
 
             });
             console.log(response)
