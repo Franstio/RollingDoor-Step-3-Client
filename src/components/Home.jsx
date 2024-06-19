@@ -118,7 +118,7 @@ const Home = () => {
     const triggerAvailableBin = async (valueIsOpen,wasteId)=>{
         try
         {
-            const response  = await axios.post("http://localhost:5000/triggerAvailbleBin",{
+            const response  = await apiClient.post("http://localhost:5000/triggerAvailbleBin",{
                 wasteId : wasteId,
                 valueIsOpen: valueIsOpen
             });
@@ -129,7 +129,7 @@ const Home = () => {
         }
     }
     const handleScan = () => {
-        axios.post('http://localhost:5000/ScanBadgeid', { badgeId: scanData })
+        apiClient.post('http://localhost:5000/ScanBadgeid', { badgeId: scanData })
             .then(res => {
                 if (res.data.error) {
                     alert(res.data.error);
@@ -149,7 +149,7 @@ const Home = () => {
     };
 
     const handleScan1 = () => {
-        axios.post('http://localhost:5000/ScanContainer', { containerId: scanData })
+        apiClient.post('http://localhost:5000/ScanContainer', { containerId: scanData })
             .then(res => {
                 if (res.data.error) {
                     alert(res.data.error);
@@ -160,7 +160,7 @@ const Home = () => {
                             return;
                         }
                         setContainer(res.data.container);
-                        triggerAvailableBin(true,res.data.container.idWaste);
+                       // triggerAvailableBin(true,res.data.container.idWaste);
                         setScanData('');
                         setIsSubmitAllowed(true);
 
@@ -180,7 +180,7 @@ const Home = () => {
         if (rollingDoorId > -1)
         {
 	        sendRollingDoorUp();
-            triggerAvailableBin(false,container.idWaste);
+            //triggerAvailableBin(false,container.idWaste);
         }
     }, [rollingDoorId]);
     const handleSubmit = () => {
@@ -195,7 +195,7 @@ const Home = () => {
 
     }
     const saveTransaksi = () => {
-        axios.post("http://localhost:5000/SaveTransaksi", {
+        apiClient.post("http://localhost:5000/SaveTransaksi", {
             payload: {
                 idContainer: container.containerId,
                 badgeId: user.badgeId,
@@ -216,7 +216,7 @@ const Home = () => {
     const CheckBinCapacity = async () => {
         try {
             console.log(container);
-            const response = await axios.post('http://localhost:5000/CheckBinCapacity', {
+            const response = await apiClient.post('http://localhost:5000/CheckBinCapacity', {
                 type_waste: container.idWaste,
                 neto: neto
             }).then(x => {
@@ -250,7 +250,7 @@ const Home = () => {
     }
     const updateBinWeight = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/UpdateBinWeight', {
+            const response = await apiClient.post('http://localhost:5000/UpdateBinWeight', {
                 binId: rollingDoorId,
                 neto: neto
             });
@@ -330,11 +330,11 @@ const Home = () => {
         try {
             //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const response = await apiClient.post(`http://192.168.18.85/api/pid/activityLogTempbyPc`, {
-                badgeno: "123",
+            const response = await apiClient.post(`http://192.168.247.128/api/pid/activityLogTempbyPc`, {
+                badgeno: user.badgeId,
                 stationname: "STEP 3 COLLECTION",
-                frombin: "2-PCL-SP-WR-1",
-                weight: "10",
+                frombin: "2-PCS-5",
+                weight: "4",
                 activity: 'Movement by System',
                 filename: null,
                 postby: "Local Step 3"
@@ -356,14 +356,10 @@ const Home = () => {
         try {
             //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const response = await apiClient.post(`http://192.168.18.85/api/pid/activityLogbypc`, {
-                //badgeno: "123",
+            const response = await apiClient.post(`http://192.168.247.128/api/pid/activityLogbypc`, {
                 stationname: "STEP 3 COLLECTION",
-                frombin: "2-PCL-SP-WR-1",
-                //weight: "10",
+                frombin: "2-PCS-5",
                 tobin: "3-IND-SP-12",
-                //filename: null,
-                //postby: "Local Step 3"
 
             });
             console.log(response)
