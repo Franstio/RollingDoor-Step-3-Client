@@ -109,7 +109,7 @@ const Home = () => {
             console.log(container);
             const response = await apiClient.post(`http://localhost:5000/rollingdoorUp`, {
                 idRollingDoor: rollingDoorId
-            });s
+            });
             console.log(response.data);
         } catch (error) {
             console.error(error);
