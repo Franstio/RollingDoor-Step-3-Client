@@ -109,7 +109,7 @@ const Home = () => {
             console.log(container);
             const response = await apiClient.post(`http://localhost:5000/rollingdoorUp`, {
                 idRollingDoor: rollingDoorId
-            });
+            });s
             console.log(response.data);
         } catch (error) {
             console.error(error);
@@ -160,7 +160,7 @@ const Home = () => {
                             return;
                         }
                         setContainer(res.data.container);
-                       // triggerAvailableBin(true,res.data.container.idWaste);
+                        triggerAvailableBin(true,res.data.container.idWaste);
                         setScanData('');
                         setIsSubmitAllowed(true);
 
@@ -180,7 +180,7 @@ const Home = () => {
         if (rollingDoorId > -1)
         {
 	        sendRollingDoorUp();
-            //triggerAvailableBin(false,container.idWaste);
+            triggerAvailableBin(false,container.idWaste);
         }
     }, [rollingDoorId]);
     const handleSubmit = () => {
