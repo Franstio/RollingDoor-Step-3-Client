@@ -107,7 +107,7 @@ const Home = () => {
     async function sendRollingDoorUp() {
         try {
             console.log(container);
-            const response = await axios.post(`http://localhost:5000/rollingdoorUp`, {
+            const response = await apiClient.post(`http://localhost:5000/rollingdoorUp`, {
                 idRollingDoor: rollingDoorId
             });
             console.log(response.data);
@@ -237,7 +237,7 @@ const Home = () => {
 
     const closeRollingDoor = async () => {
         try {
-            const response = await axios.post(`http://localhost:5000/rollingdoorDown`, {
+            const response = await apiClient.post(`http://localhost:5000/rollingdoorDown`, {
                 idRollingDoor: rollingDoorId,
             }).then(x => {
                 setWasteId(null);
