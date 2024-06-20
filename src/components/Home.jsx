@@ -334,7 +334,7 @@ const Home = () => {
                 badgeno: user.badgeId,
                 stationname: "STEP 3 COLLECTION",
                 frombin: "2-PCS-5",
-                weight: "4",
+                weight: neto,
                 activity: 'Movement by System',
                 filename: null,
                 postby: "Local Step 3"
