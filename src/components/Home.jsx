@@ -334,7 +334,7 @@ const Home = () => {
             const response = await apiClient.post(`http://192.168.159.128/api/pid/activityLogTempbyPc`, {
                 badgeno: user.badgeId,
                 stationname: "STEP 3 COLLECTION",
-                frombin: containerName,//"2-PCS-5",
+                frombin: container.name,//"2-PCS-5",
                 weight: neto,
                 activity: 'Movement by System',
                 filename: null,
@@ -362,7 +362,7 @@ const Home = () => {
             console.log(toBin);
             const response = await apiClient.post(`http://192.168.159.128/api/pid/activityLogbypc`, {
                 stationname: "STEP 3 COLLECTION",
-                frombin: containerName,
+                frombin: container.name,
                 tobin: toBin.name,
 
             });
