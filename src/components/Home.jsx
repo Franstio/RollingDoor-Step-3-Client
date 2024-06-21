@@ -330,7 +330,7 @@ const Home = () => {
         try {
             //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const response = await apiClient.post(`http://192.168.247.128/api/pid/activityLogTempbyPc`, {
+            const response = await apiClient.post(`http://192.168.159.128/api/pid/activityLogTempbyPc`, {
                 badgeno: user.badgeId,
                 stationname: "STEP 3 COLLECTION",
                 frombin: "2-PCS-5",
