@@ -297,6 +297,7 @@ const Home = () => {
             else if (isFinalStep) {
                 console.log(wasteId);
                 console.log(container.waste.bin.filter(x => x.type_waste == wasteId));
+                console.log(container);
                 if (container.waste.bin.filter(x => x.type_waste == wasteId).length < 1) {
                     alert("Mismatch Name: " + scanData);
                     return;
@@ -333,7 +334,7 @@ const Home = () => {
             const response = await apiClient.post(`http://192.168.159.128/api/pid/activityLogTempbyPc`, {
                 badgeno: user.badgeId,
                 stationname: "STEP 3 COLLECTION",
-                frombin: "2-PCS-5",
+                frombin: containerName,//"2-PCS-5",
                 weight: neto,
                 activity: 'Movement by System',
                 filename: null,
@@ -356,10 +357,13 @@ const Home = () => {
         try {
             //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const response = await apiClient.post(`http://192.168.247.128/api/pid/activityLogbypc`, {
+            console.log(container);
+            const toBin = container.waste.bin.filter(x => x.type_waste == wasteId)[0];
+            console.log(toBin);
+            const response = await apiClient.post(`http://192.168.159.128/api/pid/activityLogbypc`, {
                 stationname: "STEP 3 COLLECTION",
-                frombin: "2-PCS-5",
-                tobin: "3-IND-SP-12",
+                frombin: containerName,
+                tobin: toBin.name,
 
             });
             console.log(response)
