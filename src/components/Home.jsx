@@ -331,7 +331,7 @@ const Home = () => {
         try {
             //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const response = await apiClient.post(`http://192.168.159.128/api/pid/activityLogTempbyPc`, {
+            const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
                 badgeno: user.badgeId,
                 stationname: "STEP 3 COLLECTION",
                 frombin: container.name,//"2-PCS-5",
@@ -360,7 +360,7 @@ const Home = () => {
             console.log(container);
             const toBin = container.waste.bin.filter(x => x.type_waste == wasteId)[0];
             console.log(toBin);
-            const response = await apiClient.post(`http://192.168.159.128/api/pid/activityLogbypc`, {
+            const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`, {
                 stationname: "STEP 3 COLLECTION",
                 frombin: container.name,
                 tobin: toBin.name,
