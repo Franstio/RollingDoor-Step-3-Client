@@ -225,7 +225,7 @@ const Home = () => {
                 neto: neto
             });
             
-            const res = x.data;
+            const res = response.data;
             if (!res.success) {
                 alert(res.message);
                 return;
