@@ -131,6 +131,7 @@ const Home = () => {
     const handleScan = () => {
         apiClient.post('http://localhost:5000/ScanBadgeid', { badgeId: scanData })
             .then(res => {
+                setScanData('');
                 if (res.data.error) {
                     alert(res.data.error);
                 } else {
@@ -145,12 +146,13 @@ const Home = () => {
                     }
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => {setScanData('');console.error(err);});
     };
 
     const handleScan1 = () => {
         apiClient.post('http://localhost:5000/ScanContainer', { containerId: scanData })
             .then(res => {
+                setScanData('');
                 if (res.data.error) {
                     alert(res.data.error);
                 } else {
@@ -174,13 +176,17 @@ const Home = () => {
                     }
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err =>{setScanData(''); console.error(err);});
     };
     useEffect(() => {
+        const work1 = async () => {
+            
+            await triggerAvailableBin(false,container.idWaste);
+	        await sendRollingDoorUp();
+        }
         if (rollingDoorId > -1)
         {
-	        sendRollingDoorUp();
-            triggerAvailableBin(false,container.idWaste);
+            work1();
         }
     }, [rollingDoorId]);
     const handleSubmit = () => {
@@ -267,6 +273,7 @@ const Home = () => {
                 await sendDataPanasonicServer1();
         }
         catch (error) {
+            setScanData('');
             console.error(error);
         }
     }
@@ -303,7 +310,6 @@ const Home = () => {
                     return;
                 }
                 updateBinWeight();
-
             }
             else {
                 handleScan1();
@@ -323,6 +329,7 @@ const Home = () => {
     }
 
     const ConfirmModal = () => {
+        triggerAvailableBin(false,container.idWaste)
         setShowModalConfirmWeight(false);
         updateBinWeightConfirm();
     };
