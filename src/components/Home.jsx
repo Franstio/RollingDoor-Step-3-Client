@@ -260,6 +260,7 @@ const Home = () => {
                 binId: rollingDoorId,
                 neto: neto
             });
+            await triggerAvailableBin(false,container.idWaste);
         closeRollingDoor();
 		setRollingDoorId(-1);
                 setScanData('');
@@ -277,20 +278,19 @@ const Home = () => {
             console.error(error);
         }
     }
-
     const updateBinWeightConfirm = async () => {
         try {
             const response = await axios.post('http://localhost:5000/UpdateBinWeight', {
                 binId: rollingDoorId,
                 neto: neto
-            }).then(x => {
-                setRollingDoorId(-1);
-		setScanData('');
-                setContainer(null);
-                freezeNeto(false);
-                setFinalStep(false);
-                setIsSubmitAllowed(false);
-            });
+            });                    
+            await triggerAvailableBin(false,container.idWaste);
+            setRollingDoorId(-1);
+            setScanData('');
+            setContainer(null);
+            freezeNeto(false);
+            setFinalStep(false);
+            setIsSubmitAllowed(false);
 
         }
         catch (error) {
