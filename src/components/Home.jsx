@@ -180,8 +180,6 @@ const Home = () => {
     };
     useEffect(() => {
         const work1 = async () => {
-            
-            await triggerAvailableBin(false,container.idWaste);
 	        await sendRollingDoorUp();
         }
         if (rollingDoorId > -1)
@@ -225,15 +223,16 @@ const Home = () => {
             const response = await apiClient.post('http://localhost:5000/CheckBinCapacity', {
                 type_waste: container.idWaste,
                 neto: neto
-            }).then(x => {
-                const res = x.data;
-                if (!res.success) {
-                    alert(res.message);
-                    return;
-                }
-                setRollingDoorId(res.bin.id);
-                saveTransaksi();
             });
+            
+            const res = x.data;
+            if (!res.success) {
+                alert(res.message);
+                return;
+            }
+            await triggerAvailableBin(false,container.idWaste);
+            setRollingDoorId(res.bin.id);
+            saveTransaksi();
             console.log(response);
         }
         catch (error) {
