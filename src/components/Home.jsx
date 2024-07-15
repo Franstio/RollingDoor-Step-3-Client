@@ -95,7 +95,7 @@ const Home = () => {
         });
     }, []);
     useEffect(() => {
-        const weight = Scales50Kg?.weight50Kg ?? 0;
+        let weight = Scales50Kg?.weight50Kg ?? 0;
         const binWeight = container?.weightbin ?? 0;
 	    weight = weight - binWeight;
         //	console.log({w:weight,bin:binWeight,w2:Scales50Kg,c:container});
