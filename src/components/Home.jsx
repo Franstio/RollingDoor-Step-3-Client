@@ -279,7 +279,7 @@ const Home = () => {
     }
     const updateBinWeightConfirm = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/UpdateBinWeight', {
+            const response = await apiClient.post('http://localhost:5000/UpdateBinWeight', {
                 binId: rollingDoorId,
                 neto: neto
             });                    
