@@ -62,8 +62,6 @@ const Home = () => {
 
     const handleLogin = () => {
         // Handle login logic here
-        console.log("Username:", username);
-        console.log("Password:", password);
         // Close modal after login
         toggleModal();
     };

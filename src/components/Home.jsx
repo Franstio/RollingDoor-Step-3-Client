@@ -86,9 +86,7 @@ const Home = () => {
 	socket.emit('connectScale');
         socket.on('data', (weight50Kg) => {
             try {
-                //console.log(weight50Kg)
                 weight50Kg.weight50Kg = weight50Kg && weight50Kg.weight50Kg ? parseFloat(weight50Kg.weight50Kg.replace("=", "") ?? '0') : 0;
-                //  console.log(weight50Kg)
                 setScales50Kg(weight50Kg);
             }
             catch { }
@@ -98,7 +96,6 @@ const Home = () => {
         let weight = Scales50Kg?.weight50Kg ?? 0;
         const binWeight = container?.weightbin ?? 0;
 	    weight = weight - binWeight;
-        //	console.log({w:weight,bin:binWeight,w2:Scales50Kg,c:container});
         if (isFreeze)
             return
         setNeto(weight)
@@ -106,11 +103,9 @@ const Home = () => {
 
     async function sendRollingDoorUp() {
         try {
-            console.log(container);
             const response = await apiClient.post(`http://localhost:5000/rollingdoorUp`, {
                 idRollingDoor: rollingDoorId
             });
-            console.log(response.data);
         } catch (error) {
             console.error(error);
         }
@@ -122,7 +117,6 @@ const Home = () => {
                 wasteId : wasteId,
                 valueIsOpen: valueIsOpen
             });
-            console.log(response);
         }
         catch (error){
             console.error(error);
@@ -190,7 +184,6 @@ const Home = () => {
     const handleSubmit = () => {
         const binWeight = container?.weightbin ?? 0;
         const totalWeight = parseFloat(neto) + parseFloat(binWeight);
-        console.log(binWeight);
         if (totalWeight > 100) {
             // setErrorMessage('bin penuh.');
             return;
@@ -219,7 +212,6 @@ const Home = () => {
 
     const CheckBinCapacity = async () => {
         try {
-            console.log(container);
             const response = await apiClient.post('http://localhost:5000/CheckBinCapacity', {
                 type_waste: container.idWaste,
                 neto: neto
@@ -233,7 +225,6 @@ const Home = () => {
             await triggerAvailableBin(false,container.idWaste);
             setRollingDoorId(res.bin.id);
             saveTransaksi();
-            console.log(response);
         }
         catch (error) {
             console.error(error);
@@ -248,7 +239,6 @@ const Home = () => {
                 setWasteId(null);
 //                updateBinWeight();
             });
-            console.log(response);
         } catch (error) {
             console.error(error);
         }
@@ -301,9 +291,6 @@ const Home = () => {
             if (user == null)
                 handleScan();
             else if (isFinalStep) {
-                console.log(wasteId);
-                console.log(container.waste.bin.filter(x => x.type_waste == wasteId));
-                console.log(container);
                 if (container.waste.bin.filter(x => x.type_waste == wasteId).length < 1) {
                     alert("Mismatch Name: " + scanData);
                     return;
@@ -335,7 +322,6 @@ const Home = () => {
 
     const sendDataPanasonicServer = async () => {
         try {
-            //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
             const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
                 badgeno: user.badgeId,
@@ -347,40 +333,31 @@ const Home = () => {
                 postby: "Local Step 3"
 
             });
-            console.log(response)
             if (response.status != 200) {
-                console.log(response);
                 return;
             }
             
         }
         catch (error) {
-            console.log(error);
         }
     };
 
     const sendDataPanasonicServer1 = async () => {
         try {
-            //console.log(badgeno, stationname, frombinname,tobinname,activity);
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            console.log(container);
             const toBin = container.waste.bin.filter(x => x.type_waste == wasteId)[0];
-            console.log(toBin);
             const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`, {
                 stationname: "STEP 3 COLLECTION",
                 frombin: container.name,
                 tobin: toBin.name,
 
             });
-            console.log(response)
             if (response.status != 200) {
-                console.log(response);
                 return;
             }
             
         }
         catch (error) {
-            console.log(error);
         }
     };
 
