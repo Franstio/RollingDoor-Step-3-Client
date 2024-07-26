@@ -46,6 +46,7 @@ const Home = () => {
     const [showModal, setShowModal] = useState(false);
     const [showModalConfirmWeight, setShowModalConfirmWeight] = useState(false);
     const [wasteId, setWasteId] = useState(null);
+    const [selectedBin,setSelectedBin] = useState({});
     const toggleModal = () => {
         freezeNeto(true);
         setShowModal(!showModal);
@@ -222,6 +223,7 @@ const Home = () => {
                 alert(res.message);
                 return;
             }
+            setSelectedBin(res.bin);
             await triggerAvailableBin(false,container.idWaste);
             setRollingDoorId(res.bin.id);
             saveTransaksi();
@@ -345,11 +347,11 @@ const Home = () => {
     const sendDataPanasonicServer1 = async () => {
         try {
             //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const toBin = container.waste.bin.filter(x => x.type_waste == wasteId)[0];
+//            const toBin = container.waste.bin.filter(x => x.type_waste == wasteId)[0];
             const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`, {
                 stationname: "STEP 3 COLLECTION",
                 frombin: container.name,
-                tobin: toBin.name,
+                tobin: selectedBin.name ?? '',
 
             });
             if (response.status != 200) {
