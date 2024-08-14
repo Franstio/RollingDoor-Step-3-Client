@@ -198,7 +198,10 @@ const Home = () => {
                 idContainer: container.containerId,
                 badgeId: user.badgeId,
                 idWaste: container.idWaste,
-                neto: neto
+                neto: neto,
+                binId: selectedBin.id,
+                containerName: container.name,
+                binName:selectedBin.name
                 //              createdAt: new Date().toISOString().replace('T', ' ')
             }
         }).then(res => {
@@ -252,6 +255,8 @@ const Home = () => {
                 neto: neto
             });
             await triggerAvailableBin(false,container.idWaste);
+            await sendDataPanasonicServer();
+            await sendDataPanasonicServer1();
         closeRollingDoor();
 		setRollingDoorId(-1);
                 setScanData('');
@@ -261,8 +266,6 @@ const Home = () => {
 		freezeNeto(false);
                 setFinalStep(false);
                 setIsSubmitAllowed(false);
-                await sendDataPanasonicServer();
-                await sendDataPanasonicServer1();
         }
         catch (error) {
             setScanData('');
@@ -276,6 +279,8 @@ const Home = () => {
                 neto: neto
             });                    
             await triggerAvailableBin(false,container.idWaste);
+            await sendDataPanasonicServer();
+            await sendDataPanasonicServer1();
             setRollingDoorId(-1);
             setScanData('');
             setContainer(null);
