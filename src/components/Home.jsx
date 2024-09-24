@@ -19,10 +19,16 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import axios from "axios";
 import io from 'socket.io-client';
 const apiClient = axios.create({
-    withCredentials: false
+    withCredentials: false,
+    timeout: 5000,
 });
 
-const socket = io('http://localhost:5000/');
+const socket = io('http://localhost:5000/',
+    {
+        autoConnect:true,
+        reconnection: true,
+    }
+);
 
 const Home = () => {
     const [Scales50Kg, setScales50Kg] = useState({});
