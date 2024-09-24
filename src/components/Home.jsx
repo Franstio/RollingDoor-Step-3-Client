@@ -60,7 +60,7 @@ const Home = () => {
         setShowModal(!showModal);
     };
 
-    useEffect(()=>{
+   /* useEffect(()=>{
         const updateFocus = ()=>{
             if (inputRef && inputRef.current)
             {
@@ -70,8 +70,8 @@ const Home = () => {
         }
         if (checkInputInverval != null)
             clearInterval(checkInputInverval);
-        setCheckInputInterval( setInterval(updateFocus,1000));
-    },[])
+        setCheckInputInterval( setInterval(updateFocus,10000));
+    },[])*/
     /*const toggleModalConfirm = () => {
         setShowModalConfirmWeight(!showModalConfirmWeight);
     };*/
