@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment, useRef } from "react";
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { IoSettingsOutline } from "react-icons/io5";
@@ -53,11 +53,25 @@ const Home = () => {
     const [showModalConfirmWeight, setShowModalConfirmWeight] = useState(false);
     const [wasteId, setWasteId] = useState(null);
     const [selectedBin,setSelectedBin] = useState({});
+    const [checkInputInverval,setCheckInputInterval]= useState(null);
+    const inputRef = useRef(null);
     const toggleModal = () => {
         freezeNeto(true);
         setShowModal(!showModal);
     };
 
+    useEffect(()=>{
+        const updateFocus = ()=>{
+            if (inputRef && inputRef.current)
+            {
+                if (document.activeElement != inputRef.current)
+                    inputRef.current.focus();
+            }
+        }
+        if (checkInputInverval != null)
+            clearInterval(checkInputInverval);
+        setCheckInputInterval( setInterval(updateFocus,1000));
+    },[])
     /*const toggleModalConfirm = () => {
         setShowModalConfirmWeight(!showModalConfirmWeight);
     };*/
@@ -535,6 +549,10 @@ const Home = () => {
                                 type="text"
                                 onChange={e => setScanData(e.target.value)}
                                 value={scanData}
+                                onBlur={()=>{
+                                    if (inputRef && inputRef.current)
+                                        inputRef.current.focus();                                    
+                                }}
                                 name="text"
                                 onKeyDown={e => handleKeyPress(e)}
                                 className="block w-full rounded-md border-0 py-2 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
