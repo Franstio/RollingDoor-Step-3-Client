@@ -549,6 +549,7 @@ const Home = () => {
                                 type="text"
                                 onChange={e => setScanData(e.target.value)}
                                 value={scanData}
+                                ref={inputRef}
                                 onBlur={()=>{
                                     if (inputRef && inputRef.current)
                                         inputRef.current.focus();                                    
