@@ -243,7 +243,7 @@ const Home = () => {
             setSelectedBin(res.bin);
             const binWeight = container?.weightbin ?? 0;
             const totalWeight = parseFloat(neto) + parseFloat(binWeight);
-            if (totalWeight > res.bin.max_weight) {
+            if (totalWeight > parseFloat(res.bin.max_weight)) {
                 alert("Bin Penuh");
                 // setErrorMessage('bin penuh.');
                 return;
