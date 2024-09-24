@@ -205,7 +205,7 @@ const Home = () => {
     const handleSubmit = () => {
         const binWeight = container?.weightbin ?? 0;
         const totalWeight = parseFloat(neto) + parseFloat(binWeight);
-        if (totalWeight > 100) {
+        if (totalWeight > 600) {
             // setErrorMessage('bin penuh.');
             return;
         }
