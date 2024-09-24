@@ -60,7 +60,7 @@ const Home = () => {
         setShowModal(!showModal);
     };
 
-   /* useEffect(()=>{
+    useEffect(()=>{
         const updateFocus = ()=>{
             if (inputRef && inputRef.current)
             {
@@ -71,7 +71,7 @@ const Home = () => {
         if (checkInputInverval != null)
             clearInterval(checkInputInverval);
         setCheckInputInterval( setInterval(updateFocus,10000));
-    },[])*/
+    },[])
     /*const toggleModalConfirm = () => {
         setShowModalConfirmWeight(!showModalConfirmWeight);
     };*/
@@ -118,7 +118,7 @@ const Home = () => {
         const binWeight = container?.weightbin ?? 0;
 	    weight = weight - binWeight;
         if (isFreeze)
-            return
+            return;
         setNeto(weight)
     }, [Scales50Kg])
 
@@ -203,12 +203,6 @@ const Home = () => {
         }
     }, [rollingDoorId]);
     const handleSubmit = () => {
-        const binWeight = container?.weightbin ?? 0;
-        const totalWeight = parseFloat(neto) + parseFloat(binWeight);
-        if (totalWeight > 600) {
-            // setErrorMessage('bin penuh.');
-            return;
-        }
         CheckBinCapacity();
 
     }
@@ -247,6 +241,13 @@ const Home = () => {
                 return;
             }
             setSelectedBin(res.bin);
+            const binWeight = container?.weightbin ?? 0;
+            const totalWeight = parseFloat(neto) + parseFloat(binWeight);
+            if (totalWeight > res.bin.max_weight) {
+                alert("Bin Penuh");
+                // setErrorMessage('bin penuh.');
+                return;
+            }
             await triggerAvailableBin(false,container.idWaste);
             setRollingDoorId(res.bin.id);
             saveTransaksi();
@@ -549,7 +550,13 @@ const Home = () => {
                                 type="text"
                                 onChange={e => setScanData(e.target.value)}
                                 value={scanData}
-                                
+                                onBlur={()=>{
+                                    if (inputRef && inputRef.current)
+                                        {
+                                            if (document.activeElement != inputRef.current)
+                                                inputRef.current.focus();
+                                        }
+                                }}
                                 name="text"
                                 onKeyDown={e => handleKeyPress(e)}
                                 className="block w-full rounded-md border-0 py-2 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
