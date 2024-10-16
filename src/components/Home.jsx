@@ -178,9 +178,9 @@ const Home = () => {
         const check = wasteItems.findIndex(
             (x)=> x.name.toLowerCase() == scanData.toLowerCase()
         );
-        if (check != 1)
+        if (check != -1)
         {
-            setErrData((prev)=>({show:false,message:'Container sudah diinput sebelumnya'}));
+            setErrData((prev)=>({show:true,message:'Container sudah diinput sebelumnya'}));
             return;
         }
         apiClient.post('http://localhost:5000/ScanContainer', { containerId: scanData })
