@@ -59,7 +59,7 @@ const Home = () => {
     const [checkInputInverval,setCheckInputInterval]= useState(null);
     const inputRef = useRef(null);
     const toggleModal = () => {
-        freezeNeto(!freezeNeto);
+        freezeNeto(true);
         setShowModal(!showModal);
     };
 
@@ -137,9 +137,8 @@ const Home = () => {
             }
     };
         checkServerStatus();
-        setInterval( function () {
-             checkServerStatus();
-        }, 3000);
+        setInterval( () =>
+             checkServerStatus(), 3000);
     },[])
     const triggerAvailableBin = async (valueIsOpen,wasteId)=>{
         try
