@@ -164,7 +164,7 @@ const Home = () => {
                         setUser(res.data.user);
                         setScanData('');
                     } else {
-                        alert("User not found");x
+                        alert("User not found");
                         setUser(null);
                         setContainerName(res.data.name || '');
                         setScanData('');
@@ -279,7 +279,7 @@ const Home = () => {
     const updateBinWeight = async () => {
         try {
             const response = await apiClient.post('http://localhost:5000/UpdateBinWeight', {
-                binId: rollingDoorId,
+                binId: targetRollingDoor.id,
                 neto: neto
             });
             await triggerAvailableBin(false,container.idWaste);
@@ -302,7 +302,7 @@ const Home = () => {
     const updateBinWeightConfirm = async () => {
         try {
             const response = await apiClient.post('http://localhost:5000/UpdateBinWeight', {
-                binId: rollingDoorId,
+                binId: targetRollingDoor.id,
                 neto: neto
             });                    
             await triggerAvailableBin(false,container.idWaste);
@@ -628,7 +628,7 @@ const Home = () => {
                                 <form>
                                     <Typography variant="h6" align="center" gutterBottom>
                                         <p>Data Timbangan Telah DiSave!</p>
-                                        <p>Rolling Door {rollingDoorId} Telah Dibuka!</p>
+                                        <p>Rolling Door {targetRollingDoor.id} Telah Dibuka!</p>
                                     </Typography>
                                     <p>Ingin Menimbang lagi ??</p>
                                     <div className="flex justify-center mt-5">
