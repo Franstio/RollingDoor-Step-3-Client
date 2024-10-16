@@ -341,6 +341,7 @@ const Home = () => {
     const handleCancelConfirmModal = () => {
         setShowModalConfirmWeight(false);
         setFinalStep(true);
+        setScanData('');
         //        updateBinWeight();
         //setWasteId(null);
     }
