@@ -354,47 +354,34 @@ const Home = () => {
     };
 
     const sendDataPanasonicServer = async () => {
-        try {
-            //let stationname = containerName.split('-').slice(0, 3).join('-');
-            const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
-                badgeno: user.badgeId,
-                stationname: "STEP 3 COLLECTION",
-                frombin: container.name,//"2-PCS-5",
-                weight: neto,
-                activity: 'Movement by System',
-                filename: null,
-                postby: "Local Step 3"
+        for (let i=0;i<wasteItems.length;i++)
+        {
+            try {
+                //let stationname = containerName.split('-').slice(0, 3).join('-');
 
-            });
-            if (response.status != 200) {
-                return;
+                const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
+                    badgeno: user.badgeId,
+                    stationname: "STEP 3 COLLECTION",
+                    frombin: wasteItems[i].name,//"2-PCS-5",
+                    weight: wasteItems[i].weight,
+                    activity: 'Movement by System',
+                    filename: null,
+                    postby: "Local Step 3"
+
+                });
+                const response2 = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`, {
+                    stationname: "STEP 3 COLLECTION",
+                    frombin: wasteItems[i].name,
+                    tobin: selectedBin.name ?? '',
+
+                });
             }
-            
-        }
-        catch (error) {
-            console.log(error);
+            catch (error) {
+                console.log(error);
+            }
         }
     };
 
-    const sendDataPanasonicServer1 = async () => {
-        try {
-            //let stationname = containerName.split('-').slice(0, 3).join('-');
-//            const toBin = container.waste.bin.filter(x => x.type_waste == wasteId)[0];
-            const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`, {
-                stationname: "STEP 3 COLLECTION",
-                frombin: container.name,
-                tobin: selectedBin.name ?? '',
-
-            });
-            if (response.status != 200) {
-                return;
-            }
-            
-        }
-        catch (error) {
-            console.log(error);
-        }
-    };
 
 
     return (
