@@ -282,7 +282,7 @@ const Home = () => {
             });
             await triggerAvailableBin(false,wasteItems[0].idWaste);
             await sendDataPanasonicServer();
-            await sendDataPanasonicServer1();
+//            await sendDataPanasonicServer1();
                 setScanData('');
                 setUser(null);
                 setContainer(null);
@@ -306,7 +306,7 @@ const Home = () => {
             });                    
             await triggerAvailableBin(false,container.idWaste);
             await sendDataPanasonicServer();
-            await sendDataPanasonicServer1();
+  //          await sendDataPanasonicServer1();
             setTargetRollingDoor(null);
             setScanData('');
             setContainer(null);
