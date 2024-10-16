@@ -372,6 +372,7 @@ const Home = () => {
             
         }
         catch (error) {
+            console.log(error);
         }
     };
 
@@ -391,6 +392,7 @@ const Home = () => {
             
         }
         catch (error) {
+            console.log(error);
         }
     };
 
