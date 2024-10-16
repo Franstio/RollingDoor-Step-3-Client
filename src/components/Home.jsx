@@ -128,7 +128,7 @@ const Home = () => {
         const checkServerStatus =async ()=>{
             try
             {
-                const res = await apiClient.get(`http://${ipAddress}/`);        
+                const res = await apiClient.get(`http://${process.env.REACT_APP_PIDSG}/`);        
                 setIsOnline(res.status>=200 && res.status < 300);
             }
             catch(er)
@@ -545,7 +545,7 @@ const Home = () => {
                         <div className='flex-1 p-4 border rounded bg-white'>
                             <h1 className='text-blue-600 font-semibold mb-2 text-xl'>Neto</h1>
                             <div className=''>
-                                <div className='flex-1 flex justify-center p-4 border rounded bg-gray-200 text-5xl font-semibold'>{neto} <FiRefreshCcw size={20} /></div>
+                                <div className='flex-1 flex justify-center p-4 border rounded bg-gray-200 text-5xl font-semibold'>{neto?.toFixed(2)} <FiRefreshCcw size={20} /></div>
                                 <p className='flex justify-center text-2xl font-bold'>Kilogram</p>
                             </div>
                         </div>
