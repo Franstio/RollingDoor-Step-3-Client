@@ -662,7 +662,8 @@ const Home = () => {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                setErrData((prev)=>({show:false,message:''}))
+                                                setErrData((prev)=>({show:false,message:''}));
+                                                setShowModalConfirmWeight(true);
                                             }}
                                             className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mr-2 rounded"
                                         >
