@@ -136,8 +136,7 @@ const Home = () => {
                 setIsOnline(false);
             }
         };
-        setInterval( () =>
-             checkServerStatus(), 3000);
+        setInterval( () =>checkServerStatus(), 3000);
     },[])
     const triggerAvailableBin = async (valueIsOpen,wasteId)=>{
         try
