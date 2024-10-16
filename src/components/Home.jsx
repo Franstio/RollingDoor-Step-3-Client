@@ -575,8 +575,17 @@ const Home = () => {
                                 <p>Username: {user?.username} </p>
                                 <p>Container Id: {container?.name}</p>
                                 <p>Type Waste: {container?.waste.name}</p>
+                                {wasteItems.map((item, index) => (
+                                    <>
+                                        <p>
+                                            {index + 1}. {item.name}{" "}
+                                            {parseFloat(item.weight).toFixed(2)} Kg
+                                        </p>
+                                    </>
+                                ))}
                             </div>
-                        </div></div>
+                        </div>
+                        </div>
                 </div>
 
             </div>
