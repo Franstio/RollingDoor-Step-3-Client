@@ -137,8 +137,8 @@ const Home = () => {
             }
         }
         checkServerStatus();
-        setInterval(async () => {
-            await checkServerStatus();
+        setInterval( () => {
+             checkServerStatus();
         }, 3000);
     },[])
     const triggerAvailableBin = async (valueIsOpen,wasteId)=>{
