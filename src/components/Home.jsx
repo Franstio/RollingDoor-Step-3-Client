@@ -129,11 +129,12 @@ const Home = () => {
         const checkServerStatus =async ()=>{
             try
             {
-                const res = await apiClient.get(`http://${process.env.REACT_APP_PIDSG}/`);        
+                const res = await apiClient.get(`http://${ipAddress}/`);        
                 setIsOnline(res.status>=200 && res.status < 300);
             }
             catch(er)
             {
+                console.log(`http://${ipAddress}/`);
                 console.log(er);
                 setIsOnline(false);
             }
