@@ -328,10 +328,6 @@ const Home = () => {
             if (user == null)
                 handleScan();
             else if (isFinalStep) {
-                if (container.waste.bin.filter(x => x.type_waste == wasteId).length < 1) {
-                    alert("Mismatch Name: " + scanData);
-                    return;
-                }
                 updateBinWeight();
             }
             else {
