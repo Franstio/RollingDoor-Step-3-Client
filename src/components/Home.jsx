@@ -22,7 +22,7 @@ const apiClient = axios.create({
     withCredentials: false,
     timeout: 5000,
 });
-
+const ipAddress = process.env.REACT_APP_PIDSG;
 const socket = io('http://localhost:5000/',
     {
         autoConnect:true,
@@ -38,8 +38,10 @@ const Home = () => {
     const [isFreeze, freezeNeto] = useState(false);
     const [isFinalStep, setFinalStep] = useState(false);
     const [containerName, setContainerName] = useState('');
-    const [rollingDoorId, setRollingDoorId] = useState(-1);
+    const [targetRollingDoor, setTargetRollingDoor] = useState(null);
     const [wasteItems,setWasteItems ] = useState([]);
+    const [isOnline,setIsOnline] = useState(false);
+    const [errData,setErrData] = useState({show:false,message:''});
     //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
     //    const socket = null;
     const navigation = [
@@ -57,7 +59,7 @@ const Home = () => {
     const [checkInputInverval,setCheckInputInterval]= useState(null);
     const inputRef = useRef(null);
     const toggleModal = () => {
-        freezeNeto(true);
+        freezeNeto(!freezeNeto);
         setShowModal(!showModal);
     };
 
@@ -122,16 +124,23 @@ const Home = () => {
             return;
         setNeto(weight)
     }, [Scales50Kg])
-
-    async function sendRollingDoorUp() {
-        try {
-            const response = await apiClient.post(`http://localhost:5000/rollingdoorUp`, {
-                idRollingDoor: rollingDoorId
-            });
-        } catch (error) {
-            console.error(error);
+    useEffect(()=>{
+        const checkServerStatus =async ()=>{
+            try
+            {
+                const res = await apiClient.get(`http://${ipAddress}`);        
+                setIsOnline(res.status>=200 && res.status < 300);
+            }
+            catch(er)
+            {
+                setIsOnline(false);
+            }
         }
-    }
+        checkServerStatus();
+        setInterval(async () => {
+            await checkServerStatus();
+        }, 3000);
+    })
     const triggerAvailableBin = async (valueIsOpen,wasteId)=>{
         try
         {
@@ -166,6 +175,14 @@ const Home = () => {
     };
 
     const handleScan1 = () => {
+        const check = wasteItems.findIndex(
+            (x)=> x.name.toLowerCase() == scanData.toLowerCase()
+        );
+        if (check != 1)
+        {
+            setErrData((prev)=>({show:false,message:'Container sudah diinput sebelumnya'}));
+            return;
+        }
         apiClient.post('http://localhost:5000/ScanContainer', { containerId: scanData })
             .then(res => {
                 setScanData('');
@@ -194,15 +211,6 @@ const Home = () => {
             })
             .catch(err =>{setScanData(''); console.error(err);});
     };
-    useEffect(() => {
-        const work1 = async () => {
-	        await sendRollingDoorUp();
-        }
-        if (rollingDoorId > -1)
-        {
-            work1();
-        }
-    }, [rollingDoorId]);
     const handleSubmit = () => {
         CheckBinCapacity();
 
@@ -223,54 +231,51 @@ const Home = () => {
             setWasteId(container.idWaste);
             setIsSubmitAllowed(false);
             setScanData('');
-            toggleModal();
-            setShowModalConfirmWeight(true);
-            // CheckBinCapacity();
+//            toggleModal();
+//            setShowModalConfirmWeight(true);
+            //CheckBinCapacity();
         });
     }
 
+    const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
     const CheckBinCapacity = async () => {
         try {
-            const response = await apiClient.post('http://localhost:5000/CheckBinCapacity', {
-                type_waste: container.idWaste,
-                neto: neto
-            });
-            
-            const res = response.data;
-            if (!res.success) {
-                alert(res.message);
-                return;
-            }
-            setSelectedBin(res.bin);
-            setWasteItems([...wasteItems,res.bin]);
+            let maxWeight = selectedBin?.max_weight ?? 0;
             const binWeight = container?.weightbin ?? 0;
-            const totalWeight = parseFloat(neto) + parseFloat(binWeight);
-            if (totalWeight > parseFloat(res.bin.max_weight)) {
+            let totalWeight = parseFloat(neto) + parseFloat(binWeight);
+            if (wasteItems.length < 1)
+            {
+                const response = await apiClient.post('http://localhost:5000/CheckBinCapacity', {
+                    type_waste: container.idWaste,
+                    neto: neto
+                });
+                await triggerAvailableBin(false,container.idWaste);            
+                const res = response.data;
+                if (!res.success) {
+                    alert(res.message);
+                    return;
+                }
+                maxWeight = res.bin.max_weight;
+                setTargetRollingDoor(res.bin);
+                setSelectedBin(res.bin);
+            }
+            else
+                totalWeight = totalWeight + getTotalWeight();
+            if (totalWeight > parseFloat(maxWeight)) {
                 alert("Bin Penuh");
                 // setErrorMessage('bin penuh.');
-                return;
+                return null;
             }
-            await triggerAvailableBin(false,container.idWaste);
-            setRollingDoorId(res.bin.id);
-            saveTransaksi();
+            setWasteItems([...wasteItems,{...container,weight: neto}]);
+            setShowModalConfirmWeight(true);
+            return targetRollingDoor;
+//            saveTransaksi();
         }
         catch (error) {
             console.error(error);
         }
     }
 
-    const closeRollingDoor = async () => {
-        try {
-            const response = await apiClient.post(`http://localhost:5000/rollingdoorDown`, {
-                idRollingDoor: rollingDoorId,
-            }).then(x => {
-                setWasteId(null);
-//                updateBinWeight();
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    }
     const updateBinWeight = async () => {
         try {
             const response = await apiClient.post('http://localhost:5000/UpdateBinWeight', {
@@ -280,13 +285,12 @@ const Home = () => {
             await triggerAvailableBin(false,container.idWaste);
             await sendDataPanasonicServer();
             await sendDataPanasonicServer1();
-        closeRollingDoor();
-		setRollingDoorId(-1);
                 setScanData('');
                 setUser(null);
                 setContainer(null);
                 setNeto(0);
 		freezeNeto(false);
+        setTargetRollingDoor(null);
                 setFinalStep(false);
                 setIsSubmitAllowed(false);
         }
@@ -304,13 +308,12 @@ const Home = () => {
             await triggerAvailableBin(false,container.idWaste);
             await sendDataPanasonicServer();
             await sendDataPanasonicServer1();
-            setRollingDoorId(-1);
+            setTargetRollingDoor(null);
             setScanData('');
             setContainer(null);
             freezeNeto(false);
             setFinalStep(false);
             setIsSubmitAllowed(false);
-
         }
         catch (error) {
             console.error(error);
@@ -345,9 +348,12 @@ const Home = () => {
     }
 
     const ConfirmModal = () => {
-        triggerAvailableBin(false,container.idWaste)
+//        triggerAvailableBin(false,container.idWaste)
+        setContainer(null);
+        setScanData('');
+        setFinalStep(false);
         setShowModalConfirmWeight(false);
-        updateBinWeightConfirm();
+//        updateBinWeightConfirm();
     };
 
     const sendDataPanasonicServer = async () => {
@@ -626,9 +632,39 @@ const Home = () => {
                     </div>
                 )}
             </div>
+            <div className="flex justify-start">
+                {errData.show && (
+                    <div className="fixed z-10 inset-0 overflow-y-auto">
+                        <div className="flex items-center justify-center min-h-screen">
+                            <div
+                                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                                aria-hidden="true"
+                            ></div>
+
+                            <div className="bg-white rounded p-8 max-w-md mx-auto z-50">
+                                <div className="text-center mb-4"></div>
+                                <form>
+                                    <p>{errData.message}</p>
+                                    <div className="flex justify-center mt-5">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setErrData((prev)=>({show:false,message:''}))
+                                            }}
+                                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mr-2 rounded"
+                                        >
+                                            Continue
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
             <footer className='flex-1 rounded border flex justify-center gap-40 p-3 bg-white'  >
-                <p>Server Status: 192.168.1.5 Online</p>
-                <p>Status PLC : Online</p>
+                <p>Server Status: {ipAddress} {isOnline? "Online":"Offline"}</p>
+                <p>Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
             </footer>
         </main >
     );
