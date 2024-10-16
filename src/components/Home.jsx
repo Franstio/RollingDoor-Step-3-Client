@@ -338,6 +338,7 @@ const Home = () => {
 
     const handleCancel = () => {
         toggleModal();
+        setScanData('');
 	freezeNeto(false);
     };
     const handleCancelConfirmModal = () => {
