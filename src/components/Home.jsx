@@ -213,26 +213,29 @@ const Home = () => {
         CheckBinCapacity();
 
     }
-    const saveTransaksi = () => {
-        apiClient.post("http://localhost:5000/SaveTransaksi", {
-            payload: {
-                idContainer: container.containerId,
-                badgeId: user.badgeId,
-                idWaste: container.idWaste,
-                neto: neto,
-                binId: selectedBin.id,
-                containerName: container.name,
-                binName:selectedBin.name
-                //              createdAt: new Date().toISOString().replace('T', ' ')
-            }
-        }).then(res => {
-            setWasteId(container.idWaste);
-            setIsSubmitAllowed(false);
-            setScanData('');
-//            toggleModal();
-//            setShowModalConfirmWeight(true);
-            //CheckBinCapacity();
-        });
+    const saveTransaksi = async () => {
+        console.log(wasteItems);
+        for (let i=0;i<wasteItems.length;i++)
+        {
+            await apiClient.post("http://localhost:5000/SaveTransaksi", {
+                payload: {
+                    idContainer: wasteItems[i].containerId,
+                    badgeId: user.badgeId,
+                    idWaste: wasteItems[i].idWaste,
+                    neto: wasteItems[i].weight,
+                    binId: selectedBin.id,
+                    containerName: wasteItems[i].name,
+                    binName:selectedBin.name
+                    //              createdAt: new Date().toISOString().replace('T', ' ')
+                }
+            })
+        }
+        setScanData('');
+        setUser(null);
+        setContainer(null);
+        setTargetRollingDoor(null);
+        setWasteItems([]);
+        setSelectedBin(null);
     }
 
     const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
@@ -278,9 +281,10 @@ const Home = () => {
 
     const updateBinWeight = async () => {
         try {
+            await saveTransaksi();
             const response = await apiClient.post('http://localhost:5000/UpdateBinWeight', {
                 binId: targetRollingDoor.id,
-                neto: neto
+                neto: getTotalWeight()
             });
             await triggerAvailableBin(false,container.idWaste);
             await sendDataPanasonicServer();
