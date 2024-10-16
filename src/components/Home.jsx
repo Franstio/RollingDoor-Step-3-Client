@@ -134,8 +134,6 @@ const Home = () => {
             }
             catch(er)
             {
-                console.log(`http://${ipAddress}/`);
-                console.log(er);
                 setIsOnline(false);
             }
         };
@@ -282,7 +280,7 @@ const Home = () => {
                 binId: targetRollingDoor.id,
                 neto: getTotalWeight()
             });
-            await triggerAvailableBin(false,container.idWaste);
+            await triggerAvailableBin(false,wasteItems[0].idWaste);
             await sendDataPanasonicServer();
             await sendDataPanasonicServer1();
                 setScanData('');
