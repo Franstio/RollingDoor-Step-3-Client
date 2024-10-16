@@ -128,14 +128,14 @@ const Home = () => {
         const checkServerStatus =async ()=>{
             try
             {
-                const res = await apiClient.get(`http://${ipAddress}`);        
+                const res = await apiClient.get(`http://${ipAddress}/`);        
                 setIsOnline(res.status>=200 && res.status < 300);
             }
             catch(er)
             {
                 setIsOnline(false);
             }
-        }
+''        };
         checkServerStatus();
         setInterval( function () {
              checkServerStatus();
