@@ -135,8 +135,7 @@ const Home = () => {
             {
                 setIsOnline(false);
             }
-    };
-        checkServerStatus();
+        };
         setInterval( () =>
              checkServerStatus(), 3000);
     },[])
