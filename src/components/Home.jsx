@@ -133,6 +133,7 @@ const Home = () => {
             }
             catch(er)
             {
+                console.log(er);
                 setIsOnline(false);
             }
         };
@@ -237,6 +238,8 @@ const Home = () => {
     const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
     const CheckBinCapacity = async () => {
         try {
+            setShowModal(false);
+            freezeNeto(false);
             let maxWeight = selectedBin?.max_weight ?? 0;
             const binWeight = container?.weightbin ?? 0;
             let totalWeight = parseFloat(neto) + parseFloat(binWeight);
