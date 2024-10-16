@@ -137,7 +137,7 @@ const Home = () => {
             }
         }
         checkServerStatus();
-        setInterval( () => {
+        setInterval( function () {
              checkServerStatus();
         }, 3000);
     },[])
