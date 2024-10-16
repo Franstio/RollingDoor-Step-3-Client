@@ -39,6 +39,7 @@ const Home = () => {
     const [isFinalStep, setFinalStep] = useState(false);
     const [containerName, setContainerName] = useState('');
     const [rollingDoorId, setRollingDoorId] = useState(-1);
+    const [wasteItems,setWasteItems ] = useState([]);
     //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
     //    const socket = null;
     const navigation = [
@@ -154,7 +155,7 @@ const Home = () => {
                         setUser(res.data.user);
                         setScanData('');
                     } else {
-                        alert("User not found");
+                        alert("User not found");x
                         setUser(null);
                         setContainerName(res.data.name || '');
                         setScanData('');
@@ -241,6 +242,7 @@ const Home = () => {
                 return;
             }
             setSelectedBin(res.bin);
+            setWasteItems([...wasteItems,res.bin]);
             const binWeight = container?.weightbin ?? 0;
             const totalWeight = parseFloat(neto) + parseFloat(binWeight);
             if (totalWeight > parseFloat(res.bin.max_weight)) {
