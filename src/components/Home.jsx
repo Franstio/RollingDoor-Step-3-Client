@@ -22,7 +22,6 @@ const apiClient = axios.create({
     withCredentials: false,
     timeout: 5000,
 });
-const ipAddress = process.env.REACT_APP_PIDSG;
 const socket = io('http://localhost:5000/',
     {
         autoConnect:true,
@@ -42,6 +41,8 @@ const Home = () => {
     const [wasteItems,setWasteItems ] = useState([]);
     const [isOnline,setIsOnline] = useState(false);
     const [errData,setErrData] = useState({show:false,message:''});
+    
+    const [ipAddress,setIpAddress] = useState(process.env.REACT_APP_PIDSG);
     //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
     //    const socket = null;
     const navigation = [
@@ -230,12 +231,6 @@ const Home = () => {
                 }
             })
         }
-        setScanData('');
-        setUser(null);
-        setContainer(null);
-        setTargetRollingDoor(null);
-        setWasteItems([]);
-        setSelectedBin(null);
     }
 
     const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
@@ -297,6 +292,7 @@ const Home = () => {
         setTargetRollingDoor(null);
                 setFinalStep(false);
                 setIsSubmitAllowed(false);
+        setWasteItems([]);
         }
         catch (error) {
             setScanData('');
