@@ -225,13 +225,28 @@ const Home = () => {
                     neto: wasteItems[i].weight,
                     binId: selectedBin.id,
                     containerName: wasteItems[i].name,
-                    binName:selectedBin.name
+                    binName:selectedBin.name,
                     //              createdAt: new Date().toISOString().replace('T', ' ')
                 }
             })
         }
     }
-
+    const saveTransaksiItem = async (data)=>{
+        await apiClient.post("http://localhost:5000/SaveTransaksi", {
+            payload: {
+                idContainer: data.containerId,
+                badgeId: user.badgeId,
+                idWaste: data.idWaste,
+                neto: data.weight,
+                binId: selectedBin.id,
+                containerName: data.name,
+                binName:selectedBin.name,
+                status: data.status,
+                isSuccess: data.isSuccess
+                //              createdAt: new Date().toISOString().replace('T', ' ')
+            }
+        })
+    }
     const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
     const CheckBinCapacity = async () => {
         try {
@@ -276,7 +291,6 @@ const Home = () => {
 
     const updateBinWeight = async () => {
         try {
-            await saveTransaksi();
             const response = await apiClient.post('http://localhost:5000/UpdateBinWeight', {
                 binId: targetRollingDoor.id,
                 neto: getTotalWeight()
@@ -376,9 +390,14 @@ const Home = () => {
                     tobin: selectedBin.name ?? '',
 
                 });
+                console.log[[response.status,response.data],[response2.status,response2.data]];
+                const data = {...wasteItems[i],isSuccess: true,status:'Done'};
+                await saveTransaksi(data);
             }
             catch (error) {
                 console.log(error);
+                const data = {...wasteItems[i],isSuccess: false,status:'Pending|PIDSG'};
+                await saveTransaksi(data);
             }
         }
     };
