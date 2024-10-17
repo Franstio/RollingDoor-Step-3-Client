@@ -393,18 +393,18 @@ const Home = () => {
                     });
                     console.log([[response.status,response.data],[response2.status,response2.data]]);
                     const data = {...wasteItems[i],isSuccess: true,status:'Done'};
-                    await saveTransaksi(data);
+                    await saveTransaksiItem(data);
                 }
                 else
                 {            
                     const data = {...wasteItems[i],isSuccess: false,status:'Pending|PIDSG'};
-                    await saveTransaksi(data);
+                    await saveTransaksiItem(data);
                 }
             }
             catch (error) {
                 console.log(error);
                 const data = {...wasteItems[i],isSuccess: false,status:'Pending|PIDSG'};
-                await saveTransaksi(data);
+                await saveTransaksiItem(data);
             }
         }
     };
