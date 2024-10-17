@@ -373,26 +373,33 @@ const Home = () => {
         {
             try {
                 //let stationname = containerName.split('-').slice(0, 3).join('-');
+                if (isOnline)
+                {
+                    const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
+                        badgeno: user.badgeId,
+                        stationname: "STEP 3 COLLECTION",
+                        frombin: wasteItems[i].name,//"2-PCS-5",
+                        weight: wasteItems[i].weight,
+                        activity: 'Movement by System',
+                        filename: null,
+                        postby: "Local Step 3"
 
-                const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
-                    badgeno: user.badgeId,
-                    stationname: "STEP 3 COLLECTION",
-                    frombin: wasteItems[i].name,//"2-PCS-5",
-                    weight: wasteItems[i].weight,
-                    activity: 'Movement by System',
-                    filename: null,
-                    postby: "Local Step 3"
+                    });
+                    const response2 = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`, {
+                        stationname: "STEP 3 COLLECTION",
+                        frombin: wasteItems[i].name,
+                        tobin: selectedBin.name ?? '',
 
-                });
-                const response2 = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`, {
-                    stationname: "STEP 3 COLLECTION",
-                    frombin: wasteItems[i].name,
-                    tobin: selectedBin.name ?? '',
-
-                });
-                console.log([[response.status,response.data],[response2.status,response2.data]]);
-                const data = {...wasteItems[i],isSuccess: true,status:'Done'};
-                await saveTransaksi(data);
+                    });
+                    console.log([[response.status,response.data],[response2.status,response2.data]]);
+                    const data = {...wasteItems[i],isSuccess: true,status:'Done'};
+                    await saveTransaksi(data);
+                }
+                else
+                {            
+                    const data = {...wasteItems[i],isSuccess: false,status:'Pending|PIDSG'};
+                    await saveTransaksi(data);
+                }
             }
             catch (error) {
                 console.log(error);
