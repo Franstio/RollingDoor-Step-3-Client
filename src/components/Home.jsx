@@ -390,7 +390,7 @@ const Home = () => {
                     tobin: selectedBin.name ?? '',
 
                 });
-                console.log[[response.status,response.data],[response2.status,response2.data]];
+                console.log([[response.status,response.data],[response2.status,response2.data]]);
                 const data = {...wasteItems[i],isSuccess: true,status:'Done'};
                 await saveTransaksi(data);
             }
