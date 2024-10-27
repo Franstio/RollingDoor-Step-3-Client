@@ -375,6 +375,11 @@ const Home = () => {
                 //let stationname = containerName.split('-').slice(0, 3).join('-');
                 if (isOnline)
                 {
+                    console.wasteItems(wasteItems[0]);
+                    const weightResponse = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/sendWeight`,{
+                        binname: wasteItems[i].name,
+                        weight: wasteItems[i].step2value
+                    });
                     const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
                         badgeno: user.badgeId,
                         stationname: "STEP 3 COLLECTION",
@@ -391,7 +396,7 @@ const Home = () => {
                         tobin: selectedBin.name ?? '',
 
                     });
-                    console.log([[response.status,response.data],[response2.status,response2.data]]);
+                    console.log([[response.status,response.data],[response2.status,response2.data],[weightResponse.status,weightResponse.data]]);
                     const data = {...wasteItems[i],isSuccess: true,status:'Done'};
                     await saveTransaksiItem(data);
                 }
