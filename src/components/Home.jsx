@@ -369,17 +369,24 @@ const Home = () => {
     };
 
     const sendDataPanasonicServer = async () => {
+        const rackTargetName = process.env.REACT_APP_RACK_TARGET_CONTAINER;
+        console.wasteItems([rackTargetName]);
+        if (isOnline && container.name==rackTargetName)
+        {
+
+            const weightResponse =   await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/sendWeight`,{
+                binname: container.name,
+                weight: container.step2value
+            });
+            console.log([weightResponse.data,weightResponse.status]);
+        }
         for (let i=0;i<wasteItems.length;i++)
         {
             try {
+                console.log(wasteItems[i]);
                 //let stationname = containerName.split('-').slice(0, 3).join('-');
                 if (isOnline)
                 {
-                    console.wasteItems(wasteItems[0]);
-                    const weightResponse = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/sendWeight`,{
-                        binname: wasteItems[i].name,
-                        weight: wasteItems[i].step2value
-                    });
                     const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
                         badgeno: user.badgeId,
                         stationname: "STEP 3 COLLECTION",
@@ -396,7 +403,7 @@ const Home = () => {
                         tobin: selectedBin.name ?? '',
 
                     });
-                    console.log([[response.status,response.data],[response2.status,response2.data],[weightResponse.status,weightResponse.data]]);
+                    console.log([[response.status,response.data],[response2.status,response2.data]]);
                     const data = {...wasteItems[i],isSuccess: true,status:'Done'};
                     await saveTransaksiItem(data);
                 }
