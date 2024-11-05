@@ -24,7 +24,7 @@ const apiClient = axios.create({
 });
 const socket = io('http://localhost:5000/',
     {
-        autoConnect:true,
+        autoConnect: true,
         reconnection: true,
     }
 );
@@ -38,11 +38,11 @@ const Home = () => {
     const [isFinalStep, setFinalStep] = useState(false);
     const [containerName, setContainerName] = useState('');
     const [targetRollingDoor, setTargetRollingDoor] = useState(null);
-    const [wasteItems,setWasteItems ] = useState([]);
-    const [isOnline,setIsOnline] = useState(false);
-    const [errData,setErrData] = useState({show:false,message:''});
-    
-    const [ipAddress,setIpAddress] = useState(process.env.REACT_APP_PIDSG);
+    const [wasteItems, setWasteItems] = useState([]);
+    const [isOnline, setIsOnline] = useState(false);
+    const [errData, setErrData] = useState({ show: false, message: '' });
+
+    const [ipAddress, setIpAddress] = useState(process.env.REACT_APP_PIDSG);
     //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
     //    const socket = null;
     const navigation = [
@@ -56,26 +56,25 @@ const Home = () => {
     const [showModal, setShowModal] = useState(false);
     const [showModalConfirmWeight, setShowModalConfirmWeight] = useState(false);
     const [wasteId, setWasteId] = useState(null);
-    const [selectedBin,setSelectedBin] = useState({});
-    const [checkInputInverval,setCheckInputInterval]= useState(null);
+    const [selectedBin, setSelectedBin] = useState({});
+    const [checkInputInverval, setCheckInputInterval] = useState(null);
     const inputRef = useRef(null);
     const toggleModal = () => {
         freezeNeto(true);
         setShowModal(!showModal);
     };
 
-    useEffect(()=>{
-        const updateFocus = ()=>{
-            if (inputRef && inputRef.current)
-            {
+    useEffect(() => {
+        const updateFocus = () => {
+            if (inputRef && inputRef.current) {
                 if (document.activeElement != inputRef.current)
                     inputRef.current.focus();
             }
         }
         if (checkInputInverval != null)
             clearInterval(checkInputInverval);
-        setCheckInputInterval( setInterval(updateFocus,10000));
-    },[])
+        setCheckInputInterval(setInterval(updateFocus, 10000));
+    }, [])
     /*const toggleModalConfirm = () => {
         setShowModalConfirmWeight(!showModalConfirmWeight);
     };*/
@@ -108,7 +107,7 @@ const Home = () => {
     };
 
     useEffect(() => {
-	socket.emit('connectScale');
+        socket.emit('connectScale');
         socket.on('data', (weight50Kg) => {
             try {
                 weight50Kg.weight50Kg = weight50Kg && weight50Kg.weight50Kg ? parseFloat(weight50Kg.weight50Kg.replace("=", "") ?? '0') : 0;
@@ -120,34 +119,31 @@ const Home = () => {
     useEffect(() => {
         let weight = Scales50Kg?.weight50Kg ?? 0;
         const binWeight = container?.weightbin ?? 0;
-	    weight = weight - binWeight;
+        weight = weight - binWeight;
         if (isFreeze)
             return;
         setNeto(weight)
     }, [Scales50Kg])
-    useEffect(()=>{
-        const checkServerStatus =async ()=>{
-            try
-            {
-                const res = await apiClient.get(`http://${ipAddress}/`);        
-                setIsOnline(res.status>=200 && res.status < 300);
+    useEffect(() => {
+        const checkServerStatus = async () => {
+            try {
+                const res = await apiClient.get(`http://${ipAddress}/`);
+                setIsOnline(res.status >= 200 && res.status < 300);
             }
-            catch(er)
-            {
+            catch (er) {
                 setIsOnline(false);
             }
         };
-        setInterval( () =>checkServerStatus(), 3000);
-    },[])
-    const triggerAvailableBin = async (valueIsOpen,wasteId)=>{
-        try
-        {
-            const response  = await apiClient.post("http://localhost:5000/triggerAvailbleBin",{
-                wasteId : wasteId,
+        setInterval(() => checkServerStatus(), 3000);
+    }, [])
+    const triggerAvailableBin = async (valueIsOpen, wasteId) => {
+        try {
+            const response = await apiClient.post("http://localhost:5000/triggerAvailbleBin", {
+                wasteId: wasteId,
                 valueIsOpen: valueIsOpen
             });
         }
-        catch (error){
+        catch (error) {
             console.error(error);
         }
     }
@@ -169,16 +165,15 @@ const Home = () => {
                     }
                 }
             })
-            .catch(err => {setScanData('');console.error(err);});
+            .catch(err => { setScanData(''); console.error(err); });
     };
 
     const handleScan1 = () => {
         const check = wasteItems.findIndex(
-            (x)=> x.name.toLowerCase() == scanData.toLowerCase()
+            (x) => x.name.toLowerCase() == scanData.toLowerCase()
         );
-        if (check != -1)
-        {
-            setErrData((prev)=>({show:true,message:'Container sudah diinput sebelumnya'}));
+        if (check != -1) {
+            setErrData((prev) => ({ show: true, message: 'Container sudah diinput sebelumnya' }));
             return;
         }
         apiClient.post('http://localhost:5000/ScanContainer', { containerId: scanData })
@@ -193,7 +188,7 @@ const Home = () => {
                             return;
                         }
                         setContainer(res.data.container);
-                        triggerAvailableBin(true,res.data.container.idWaste);
+                        triggerAvailableBin(true, res.data.container.idWaste);
                         setScanData('');
                         setIsSubmitAllowed(true);
 
@@ -207,7 +202,7 @@ const Home = () => {
                     }
                 }
             })
-            .catch(err =>{setScanData(''); console.error(err);});
+            .catch(err => { setScanData(''); console.error(err); });
     };
     const handleSubmit = () => {
         CheckBinCapacity();
@@ -215,8 +210,7 @@ const Home = () => {
     }
     const saveTransaksi = async () => {
         console.log(wasteItems);
-        for (let i=0;i<wasteItems.length;i++)
-        {
+        for (let i = 0; i < wasteItems.length; i++) {
             await apiClient.post("http://localhost:5000/SaveTransaksi", {
                 payload: {
                     idContainer: wasteItems[i].containerId,
@@ -225,13 +219,13 @@ const Home = () => {
                     neto: wasteItems[i].weight,
                     binId: selectedBin.id,
                     containerName: wasteItems[i].name,
-                    binName:selectedBin.name,
+                    binName: selectedBin.name,
                     //              createdAt: new Date().toISOString().replace('T', ' ')
                 }
             })
         }
     }
-    const saveTransaksiItem = async (data)=>{
+    const saveTransaksiItem = async (data) => {
         await apiClient.post("http://localhost:5000/SaveTransaksi", {
             payload: {
                 idContainer: data.containerId,
@@ -240,7 +234,7 @@ const Home = () => {
                 neto: data.weight,
                 binId: selectedBin.id,
                 containerName: data.name,
-                binName:selectedBin.name,
+                binName: selectedBin.name,
                 status: data.status,
                 isSuccess: data.isSuccess
                 //              createdAt: new Date().toISOString().replace('T', ' ')
@@ -254,14 +248,13 @@ const Home = () => {
             freezeNeto(false);
             let maxWeight = selectedBin?.max_weight ?? 0;
             const binWeight = container?.weightbin ?? 0;
-            let totalWeight = parseFloat(neto) + parseFloat(binWeight); 
-            if (wasteItems.length < 1)
-            {
+            let totalWeight = parseFloat(neto) + parseFloat(binWeight);
+            if (wasteItems.length < 1) {
                 const response = await apiClient.post('http://localhost:5000/CheckBinCapacity', {
                     type_waste: container.idWaste,
                     neto: neto
                 });
-                await triggerAvailableBin(false,container.idWaste);            
+                await triggerAvailableBin(false, container.idWaste);
                 const res = response.data;
                 if (!res.success) {
                     alert(res.message);
@@ -273,16 +266,16 @@ const Home = () => {
                 totalWeight = res.bin.weight + totalWeight;
             }
             else
-                totalWeight = parseFloat(selectedBin.weight) +  totalWeight + getTotalWeight();
+                totalWeight = parseFloat(selectedBin.weight) + totalWeight + getTotalWeight();
             if (totalWeight > parseFloat(maxWeight)) {
                 alert("Bin Penuh");
                 // setErrorMessage('bin penuh.');
                 return null;
             }
-            setWasteItems([...wasteItems,{...container,weight: neto}]);
+            setWasteItems([...wasteItems, { ...container, weight: neto }]);
             setShowModalConfirmWeight(true);
             return targetRollingDoor;
-//            saveTransaksi();
+            //            saveTransaksi();
         }
         catch (error) {
             console.error(error);
@@ -295,18 +288,18 @@ const Home = () => {
                 binId: targetRollingDoor.id,
                 neto: getTotalWeight()
             });
-            await triggerAvailableBin(false,wasteItems[0].idWaste);
+            await triggerAvailableBin(false, wasteItems[0].idWaste);
             await sendDataPanasonicServer();
-//            await sendDataPanasonicServer1();
-                setScanData('');
-                setUser(null);
-                setContainer(null);
-                setNeto(0);
-		freezeNeto(false);
-        setTargetRollingDoor(null);
-                setFinalStep(false);
-                setIsSubmitAllowed(false);
-        setWasteItems([]);
+            //            await sendDataPanasonicServer1();
+            setScanData('');
+            setUser(null);
+            setContainer(null);
+            setNeto(0);
+            freezeNeto(false);
+            setTargetRollingDoor(null);
+            setFinalStep(false);
+            setIsSubmitAllowed(false);
+            setWasteItems([]);
         }
         catch (error) {
             setScanData('');
@@ -318,10 +311,10 @@ const Home = () => {
             const response = await apiClient.post('http://localhost:5000/UpdateBinWeight', {
                 binId: targetRollingDoor.id,
                 neto: neto
-            });                    
-            await triggerAvailableBin(false,container.idWaste);
+            });
+            await triggerAvailableBin(false, container.idWaste);
             await sendDataPanasonicServer();
-  //          await sendDataPanasonicServer1();
+            //          await sendDataPanasonicServer1();
             setTargetRollingDoor(null);
             setScanData('');
             setContainer(null);
@@ -349,7 +342,7 @@ const Home = () => {
     const handleCancel = () => {
         toggleModal();
         setScanData('');
-	freezeNeto(false);
+        freezeNeto(false);
     };
     const handleCancelConfirmModal = () => {
         setShowModalConfirmWeight(false);
@@ -360,33 +353,29 @@ const Home = () => {
     }
 
     const ConfirmModal = () => {
-//        triggerAvailableBin(false,container.idWaste)
+        //        triggerAvailableBin(false,container.idWaste)
         setContainer(null);
         setScanData('');
         setFinalStep(false);
         setShowModalConfirmWeight(false);
-//        updateBinWeightConfirm();
+        //        updateBinWeightConfirm();
     };
 
     const sendDataPanasonicServer = async () => {
         const rackTargetName = process.env.REACT_APP_RACK_TARGET_CONTAINER;
-        console.wasteItems([rackTargetName]);
-        if (isOnline && container.name==rackTargetName)
-        {
-
-            const weightResponse =   await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/sendWeight`,{
-                binname: container.name,
-                weight: container.step2value
-            });
-            console.log([weightResponse.data,weightResponse.status]);
-        }
-        for (let i=0;i<wasteItems.length;i++)
-        {
+        console.log([wasteItems, rackTargetName]);
+        for (let i = 0; i < wasteItems.length; i++) {
             try {
-                console.log(wasteItems[i]);
                 //let stationname = containerName.split('-').slice(0, 3).join('-');
-                if (isOnline)
-                {
+                if (isOnline) {
+                    if (wasteItems[i].name == rackTargetName) {
+
+                        const weightResponse = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/sendWeight`, {
+                            binname: wasteItems[i].name,
+                            weight: wasteItems[i].step2value
+                        });
+                        console.log([weightResponse.data, weightResponse.status]);
+                    }
                     const response = await apiClient.post(`http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`, {
                         badgeno: user.badgeId,
                         stationname: "STEP 3 COLLECTION",
@@ -403,19 +392,18 @@ const Home = () => {
                         tobin: selectedBin.name ?? '',
 
                     });
-                    console.log([[response.status,response.data],[response2.status,response2.data]]);
-                    const data = {...wasteItems[i],isSuccess: true,status:'Done'};
+                    console.log([[response.status, response.data], [response2.status, response2.data]]);
+                    const data = { ...wasteItems[i], isSuccess: true, status: 'Done' };
                     await saveTransaksiItem(data);
                 }
-                else
-                {            
-                    const data = {...wasteItems[i],isSuccess: false,status:'Pending|PIDSG'};
+                else {
+                    const data = { ...wasteItems[i], isSuccess: false, status: 'Pending|PIDSG' };
                     await saveTransaksiItem(data);
                 }
             }
             catch (error) {
                 console.log(error);
-                const data = {...wasteItems[i],isSuccess: false,status:'Pending|PIDSG'};
+                const data = { ...wasteItems[i], isSuccess: false, status: 'Pending|PIDSG' };
                 await saveTransaksiItem(data);
             }
         }
@@ -583,12 +571,11 @@ const Home = () => {
                                 type="text"
                                 onChange={e => setScanData(e.target.value)}
                                 value={scanData}
-                                onBlur={()=>{
-                                    if (inputRef && inputRef.current)
-                                        {
-                                            if (document.activeElement != inputRef.current)
-                                                inputRef.current.focus();
-                                        }
+                                onBlur={() => {
+                                    if (inputRef && inputRef.current) {
+                                        if (document.activeElement != inputRef.current)
+                                            inputRef.current.focus();
+                                    }
                                 }}
                                 name="text"
                                 onKeyDown={e => handleKeyPress(e)}
@@ -610,7 +597,7 @@ const Home = () => {
                                 ))}
                             </div>
                         </div>
-                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -683,7 +670,7 @@ const Home = () => {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                setErrData((prev)=>({show:false,message:''}));
+                                                setErrData((prev) => ({ show: false, message: '' }));
                                                 setShowModalConfirmWeight(true);
                                             }}
                                             className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mr-2 rounded"
@@ -698,7 +685,7 @@ const Home = () => {
                 )}
             </div>
             <footer className='flex-1 rounded border flex justify-center gap-40 p-3 bg-white'  >
-                <p>Server Status: {ipAddress} {isOnline? "Online":"Offline"}</p>
+                <p>Server Status: {ipAddress} {isOnline ? "Online" : "Offline"}</p>
                 <p>Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
             </footer>
         </main >
