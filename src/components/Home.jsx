@@ -351,6 +351,9 @@ const Home = () => {
         //        updateBinWeight();
         //setWasteId(null);
     }
+    const refreshPage=  ()=>{
+        window.location.reload();
+    }
 
     const ConfirmModal = () => {
         //        triggerAvailableBin(false,container.idWaste)
@@ -684,9 +687,15 @@ const Home = () => {
                     </div>
                 )}
             </div>
-            <footer className='flex-1 rounded border flex justify-center gap-40 p-3 bg-white'  >
-                <p>Server Status: {ipAddress} {isOnline ? "Online" : "Offline"}</p>
-                <p>Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
+            <footer className='flex-1 rounded border flex-col justify-center gap-40 p-3 bg-white'  >
+                <p  className="text-center">Server Status: {ipAddress} {isOnline ? "Online" : "Offline"}</p>
+                <p className="text-center">Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
+                
+                    <button 
+                    onClick={()=>refreshPage()}
+                    disabled={isSubmitAllowed}
+                    className={`block w-full border rounded py-2  justify-center items-center font-bold mt-5 ${!isSubmitAllowed ? "bg-sky-400 " : "bg-gray-600"} text-white text-lg`}
+                    >Refresh</button>
             </footer>
         </main >
     );
