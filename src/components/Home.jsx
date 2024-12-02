@@ -643,6 +643,7 @@ const Home = () => {
               <input
                 type="text"
                 onChange={(e) => setScanData(e.target.value)}
+                ref={inputRef}
                 value={scanData}
                 onBlur={() => {
                   if (inputRef && inputRef.current) {
