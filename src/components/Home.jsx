@@ -253,7 +253,7 @@ const Home = () => {
         idContainer: data.containerId,
         badgeId: user.badgeId,
         idWaste: data.idWaste,
-        neto: data.weight,
+        neto: data.neto,
         binId: selectedBin.id,
         containerName: data.name,
         binName: selectedBin.name,
@@ -297,7 +297,7 @@ const Home = () => {
         // setErrorMessage('bin penuh.');
         return null;
       }
-      setWasteItems([...wasteItems, { ...container, weight: bruto }]);
+      setWasteItems([...wasteItems, { ...container, weight: bruto,neto: neto }]);
       setShowModalConfirmWeight(true);
       return targetRollingDoor;
       //            saveTransaksi();
