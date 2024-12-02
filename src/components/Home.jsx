@@ -30,6 +30,7 @@ const socket = io("http://localhost:5000/", {
 
 const Home = () => {
   const [Scales50Kg, setScales50Kg] = useState({});
+  const [bruto,setBruto] = useState(0);
   const [scanData, setScanData] = useState("");
   const [username, setUsername] = useState("");
   const [neto, setNeto] = useState(0);
@@ -133,6 +134,7 @@ const Home = () => {
     weight = weight - binWeight;
     if (isFreeze) return;
     setNeto(weight);
+    setBruto(parseFloat(Scales50Kg?.weight50Kg ?? 0));
   }, [Scales50Kg]);
   useEffect(() => {
     const checkServerStatus = async () => {
@@ -295,7 +297,7 @@ const Home = () => {
         // setErrorMessage('bin penuh.');
         return null;
       }
-      setWasteItems([...wasteItems, { ...container, weight: neto }]);
+      setWasteItems([...wasteItems, { ...container, weight: bruto }]);
       setShowModalConfirmWeight(true);
       return targetRollingDoor;
       //            saveTransaksi();
@@ -320,6 +322,7 @@ const Home = () => {
       setUser(null);
       setContainer(null);
       setNeto(0);
+      setBruto(0);
       freezeNeto(false);
       setTargetRollingDoor(null);
       setFinalStep(false);
