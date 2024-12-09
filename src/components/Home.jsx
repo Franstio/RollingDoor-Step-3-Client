@@ -41,7 +41,7 @@ const Home = () => {
   const [wasteItems, setWasteItems] = useState([]);
   const [isOnline, setIsOnline] = useState(false);
   const [errData, setErrData] = useState({ show: false, message: "" });
-
+  const [syncing,setSyncing] = useState(false);
   const [ipAddress, setIpAddress] = useState(process.env.REACT_APP_PIDSG);
   //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
   //    const socket = null;
@@ -381,6 +381,26 @@ const Home = () => {
     const refreshPage=  ()=>{
         window.location.reload();
     }
+    const syncData = ()=>{
+      setSyncing(true);
+      try
+      {
+        
+      const res=  apiClient.get(
+        `http://localhost:5000/sync-all`,{
+          timeout:10000,
+          validateStatus: ()=>true
+        });
+        console.log(res);
+      }
+      catch (er)
+      {
+        console.log(er);
+      }
+      finally{
+        setSyncing(false);
+      }
+    }
 
   const ConfirmModal = () => {
     //        triggerAvailableBin(false,container.idWaste)
@@ -671,7 +691,7 @@ const Home = () => {
                   <>
                     <p>
                       {index + 1}. {item.name}{" "}
-                      {parseFloat(item.weight).toFixed(2)} Kg
+                      {parseFloat(item.neto).toFixed(2)} Kg
                     </p>
                   </>
                 ))}
@@ -793,11 +813,18 @@ const Home = () => {
                 <p  className="text-center">Server Status: {ipAddress} {isOnline ? "Online" : "Offline"}</p>
                 <p className="text-center">Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
                 
-                    <button 
-                    onClick={()=>refreshPage()}
-                    disabled={isSubmitAllowed}
-                    className={`block w-full border rounded py-2  justify-center items-center font-bold mt-5 ${!isSubmitAllowed ? "bg-sky-400 " : "bg-gray-600"} text-white text-lg`}
-                    >Refresh</button>
+                <div className="flex gap-3 flex-row w-100 justify-center">
+      <button 
+        onClick={()=>syncData()}
+        disabled={isSubmitAllowed || syncing}
+        className={`p-3 border rounded py-2  justify-center items-center font-bold mt-5 ${!isSubmitAllowed && !syncing ? "bg-sky-400 " : "bg-gray-600"} text-white text-lg`}
+        >Sync Data</button>
+      <button 
+        onClick={()=>refreshPage()}
+        disabled={isSubmitAllowed || syncing}
+        className={`p-3 border rounded py-2  justify-center items-center font-bold mt-5 ${!isSubmitAllowed && !syncing ? "bg-sky-400 " : "bg-gray-600"} text-white text-lg`}
+        >Refresh</button>
+      </div>
             </footer>
         </main >
     );
