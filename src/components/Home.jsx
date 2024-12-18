@@ -29,6 +29,7 @@ const socket = io("http://localhost:5000/", {
 });
 
 const Home = () => {
+  const [refresh,setRefresh] = useState(false);
   const [Scales50Kg, setScales50Kg] = useState({});
   const [bruto,setBruto] = useState(0);
   const [scanData, setScanData] = useState("");
@@ -264,6 +265,8 @@ const Home = () => {
     });
   };
   const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
+  
+  const getTotalNetoWeight = () => wasteItems.reduce((a, b) => a + b.neto, 0);
   const CheckBinCapacity = async () => {
     try {
       setShowModal(false);
@@ -312,7 +315,7 @@ const Home = () => {
         "http://localhost:5000/UpdateBinWeight",
         {
           binId: targetRollingDoor.id,
-          neto: getTotalWeight(),
+          neto: getTotalNetoWeight(),
         }
       );
       await triggerAvailableBin(false, wasteItems[0].idWaste);
@@ -379,7 +382,7 @@ const Home = () => {
     //setWasteId(null);
   };
     const refreshPage=  ()=>{
-        window.location.reload();
+      setRefresh(true);
     }
     const syncData = ()=>{
       setSyncing(true);
@@ -809,6 +812,43 @@ const Home = () => {
                     </div>
                 )}
             </div>
+            <div className="flex justify-start">
+          {refresh && (
+            <div className="fixed z-10 inset-0 overflow-y-auto">
+              <div className="flex items-center justify-center min-h-screen">
+                <div
+                  className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                  aria-hidden="true"
+                ></div>
+
+                <div className="bg-white rounded p-10 max-w-md mx-auto z-50">
+                  <div className="text-center mb-4"></div>
+                  <form>
+                    <span className="text-2xl">
+                      Apakah benar mau di refresh?
+                    </span>
+                    <div className="flex justify-center gap-8 mt-5">
+                      <button
+                        type="button"
+                        onClick={() => window.location.reload()}
+                        className="bg-blue-500 hover:bg-blue-600 text-2xl text-white font-bold py-3 px-5 mr-2 rounded"
+                      >
+                        Iya
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRefresh(false)}
+                        className="bg-gray-500 hover:bg-red-600 text-2xl text-white font-bold py-3 px-5 rounded"
+                      >
+                        Tidak
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
             <footer className='flex-1 rounded border flex-col justify-center gap-40 p-3 bg-white'  >
                 <p  className="text-center">Server Status: {ipAddress} {isOnline ? "Online" : "Offline"}</p>
                 <p className="text-center">Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
