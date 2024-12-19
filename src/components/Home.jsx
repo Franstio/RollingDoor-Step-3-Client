@@ -273,7 +273,7 @@ const Home = () => {
       freezeNeto(false);
       let maxWeight = selectedBin?.max_weight ?? 0;
       const binWeight = container?.weightbin ?? 0;
-      let totalWeight = parseFloat(neto) + parseFloat(binWeight);
+      let totalWeight = parseFloat(neto);
       if (wasteItems.length < 1) {
         const response = await apiClient.post(
           "http://localhost:5000/CheckBinCapacity",
