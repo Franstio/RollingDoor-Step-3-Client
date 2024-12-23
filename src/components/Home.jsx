@@ -436,7 +436,7 @@ const Home = () => {
           const data = {
             ...wasteItems[i],
             isSuccess: false,
-            status: "Pending|PIDSG1",
+            status: "Pending|PIDSG|1",
           };
           await saveTransaksiItem(data);
           continue;
@@ -460,7 +460,7 @@ const Home = () => {
           const data = {
             ...wasteItems[i],
             isSuccess: false,
-            status: "Pending|PIDSG2",
+            status: "Pending|PIDSG|2",
           };
           await saveTransaksiItem(data);
           continue;
@@ -480,7 +480,7 @@ const Home = () => {
           const data = {
             ...wasteItems[i],
             isSuccess: false,
-            status: "Pending|PIDSG3",
+            status: "Pending|PIDSG|3",
           };
           await saveTransaksiItem(data);
           continue;
@@ -491,7 +491,7 @@ const Home = () => {
         const data = {
           ...wasteItems[i],
           isSuccess: false,
-          status: "Pending|PIDSG",
+          status: "Pending|PIDSG|1",
         };
         await saveTransaksiItem(data);
       }
