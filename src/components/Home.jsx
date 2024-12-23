@@ -29,9 +29,9 @@ const socket = io("http://localhost:5000/", {
 });
 
 const Home = () => {
-  const [refresh,setRefresh] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [Scales50Kg, setScales50Kg] = useState({});
-  const [bruto,setBruto] = useState(0);
+  const [bruto, setBruto] = useState(0);
   const [scanData, setScanData] = useState("");
   const [username, setUsername] = useState("");
   const [neto, setNeto] = useState(0);
@@ -42,7 +42,7 @@ const Home = () => {
   const [wasteItems, setWasteItems] = useState([]);
   const [isOnline, setIsOnline] = useState(false);
   const [errData, setErrData] = useState({ show: false, message: "" });
-  const [syncing,setSyncing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [ipAddress, setIpAddress] = useState(process.env.REACT_APP_PIDSG);
   //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
   //    const socket = null;
@@ -96,8 +96,8 @@ const Home = () => {
         value > 70
           ? "#f44336"
           : theme.palette.mode === "light"
-          ? "#1a90ff"
-          : "#308fe8",
+            ? "#1a90ff"
+            : "#308fe8",
     },
   }));
 
@@ -126,7 +126,7 @@ const Home = () => {
             ? parseFloat(weight50Kg.weight50Kg.replace("=", "") ?? "0")
             : 0;
         setScales50Kg(weight50Kg);
-      } catch {}
+      } catch { }
     });
   }, []);
   useEffect(() => {
@@ -265,7 +265,7 @@ const Home = () => {
     });
   };
   const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
-  
+
   const getTotalNetoWeight = () => wasteItems.reduce((a, b) => a + b.neto, 0);
   const CheckBinCapacity = async () => {
     try {
@@ -300,7 +300,7 @@ const Home = () => {
         // setErrorMessage('bin penuh.');
         return null;
       }
-      setWasteItems([...wasteItems, { ...container, weight: bruto,neto: neto }]);
+      setWasteItems([...wasteItems, { ...container, weight: bruto, neto: neto }]);
       setShowModalConfirmWeight(true);
       return targetRollingDoor;
       //            saveTransaksi();
@@ -381,29 +381,27 @@ const Home = () => {
     //        updateBinWeight();
     //setWasteId(null);
   };
-    const refreshPage=  ()=>{
-      setRefresh(true);
+  const refreshPage = () => {
+    setRefresh(true);
+  }
+  const syncData = () => {
+    setSyncing(true);
+    try {
+
+      const res = apiClient.get(
+        `http://localhost:5000/sync-all`, {
+        timeout: 10000,
+        validateStatus: () => true
+      });
+      console.log(res);
     }
-    const syncData = ()=>{
-      setSyncing(true);
-      try
-      {
-        
-      const res=  apiClient.get(
-        `http://localhost:5000/sync-all`,{
-          timeout:10000,
-          validateStatus: ()=>true
-        });
-        console.log(res);
-      }
-      catch (er)
-      {
-        console.log(er);
-      }
-      finally{
-        setSyncing(false);
-      }
+    catch (er) {
+      console.log(er);
     }
+    finally {
+      setSyncing(false);
+    }
+  }
 
   const ConfirmModal = () => {
     //        triggerAvailableBin(false,container.idWaste)
@@ -419,9 +417,9 @@ const Home = () => {
     console.log([wasteItems, rackTargetName]);
     const rackTargets = rackTargetName.split(",");
     for (let i = 0; i < wasteItems.length; i++) {
-      try {
-        //let stationname = containerName.split('-').slice(0, 3).join('-');
-        if (isOnline) {
+      //let stationname = containerName.split('-').slice(0, 3).join('-');
+      if (isOnline) {
+        try {
           if (rackTargets.includes(wasteItems[i].name)) {
             const weightResponse = await apiClient.post(
               `http://${process.env.REACT_APP_PIDSG}/api/pid/sendWeight`,
@@ -432,6 +430,18 @@ const Home = () => {
             );
             console.log([weightResponse.data, weightResponse.status]);
           }
+        }
+        catch (error) {
+          console.log(error);
+          const data = {
+            ...wasteItems[i],
+            isSuccess: false,
+            status: "Pending|PIDSG1",
+          };
+          await saveTransaksiItem(data);
+          continue;
+        }
+        try {
           const response = await apiClient.post(
             `http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`,
             {
@@ -444,6 +454,18 @@ const Home = () => {
               postby: "Local Step 3",
             }
           );
+        }
+        catch (error) {
+          console.log(error);
+          const data = {
+            ...wasteItems[i],
+            isSuccess: false,
+            status: "Pending|PIDSG2",
+          };
+          await saveTransaksiItem(data);
+          continue;
+        }
+        try {
           const response2 = await apiClient.post(
             `http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`,
             {
@@ -452,22 +474,20 @@ const Home = () => {
               tobin: selectedBin.name ?? "",
             }
           );
-          console.log([
-            [response.status, response.data],
-            [response2.status, response2.data],
-          ]);
-          const data = { ...wasteItems[i], isSuccess: true, status: "Done" };
-          await saveTransaksiItem(data);
-        } else {
+        }
+        catch (error) {
+          console.log(error);
           const data = {
             ...wasteItems[i],
             isSuccess: false,
-            status: "Pending|PIDSG",
+            status: "Pending|PIDSG3",
           };
           await saveTransaksiItem(data);
+          continue;
         }
-      } catch (error) {
-        console.log(error);
+        const data = { ...wasteItems[i], isSuccess: true, status: "Done" };
+        await saveTransaksiItem(data);
+      } else {
         const data = {
           ...wasteItems[i],
           isSuccess: false,
@@ -790,84 +810,84 @@ const Home = () => {
                 aria-hidden="true"
               ></div>
 
-                            <div className="bg-white rounded p-8 max-w-md mx-auto z-50">
-                                <div className="text-center mb-4"></div>
-                                <form>
-                                    <p>{errData.message}</p>
-                                    <div className="flex justify-center mt-5">
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setErrData((prev) => ({ show: false, message: '' }));
-                                                setShowModalConfirmWeight(true);
-                                            }}
-                                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mr-2 rounded"
-                                        >
-                                            Continue
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-            <div className="flex justify-start">
-          {refresh && (
-            <div className="fixed z-10 inset-0 overflow-y-auto">
-              <div className="flex items-center justify-center min-h-screen">
-                <div
-                  className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                  aria-hidden="true"
-                ></div>
-
-                <div className="bg-white rounded p-10 max-w-md mx-auto z-50">
-                  <div className="text-center mb-4"></div>
-                  <form>
-                    <span className="text-2xl">
-                      Apakah benar mau di refresh?
-                    </span>
-                    <div className="flex justify-center gap-8 mt-5">
-                      <button
-                        type="button"
-                        onClick={() => window.location.reload()}
-                        className="bg-blue-500 hover:bg-blue-600 text-2xl text-white font-bold py-3 px-5 mr-2 rounded"
-                      >
-                        Iya
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRefresh(false)}
-                        className="bg-gray-500 hover:bg-red-600 text-2xl text-white font-bold py-3 px-5 rounded"
-                      >
-                        Tidak
-                      </button>
-                    </div>
-                  </form>
-                </div>
+              <div className="bg-white rounded p-8 max-w-md mx-auto z-50">
+                <div className="text-center mb-4"></div>
+                <form>
+                  <p>{errData.message}</p>
+                  <div className="flex justify-center mt-5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setErrData((prev) => ({ show: false, message: '' }));
+                        setShowModalConfirmWeight(true);
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mr-2 rounded"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
-          )}
-        </div>
-            <footer className='flex-1 rounded border flex-col justify-center gap-40 p-3 bg-white'  >
-                <p  className="text-center">Server Status: {ipAddress} {isOnline ? "Online" : "Offline"}</p>
-                <p className="text-center">Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
-                
-                <div className="flex gap-3 flex-row w-100 justify-end">
-      {/* <button 
+          </div>
+        )}
+      </div>
+      <div className="flex justify-start">
+        {refresh && (
+          <div className="fixed z-10 inset-0 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen">
+              <div
+                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                aria-hidden="true"
+              ></div>
+
+              <div className="bg-white rounded p-10 max-w-md mx-auto z-50">
+                <div className="text-center mb-4"></div>
+                <form>
+                  <span className="text-2xl">
+                    Apakah benar mau di refresh?
+                  </span>
+                  <div className="flex justify-center gap-8 mt-5">
+                    <button
+                      type="button"
+                      onClick={() => window.location.reload()}
+                      className="bg-blue-500 hover:bg-blue-600 text-2xl text-white font-bold py-3 px-5 mr-2 rounded"
+                    >
+                      Iya
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRefresh(false)}
+                      className="bg-gray-500 hover:bg-red-600 text-2xl text-white font-bold py-3 px-5 rounded"
+                    >
+                      Tidak
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      <footer className='flex-1 rounded border flex-col justify-center gap-40 p-3 bg-white'  >
+        <p className="text-center">Server Status: {ipAddress} {isOnline ? "Online" : "Offline"}</p>
+        <p className="text-center">Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
+
+        <div className="flex gap-3 flex-row w-100 justify-end">
+          {/* <button 
         onClick={()=>syncData()}
         disabled={isSubmitAllowed || syncing}
         className={`p-3 border rounded py-2   justify-center items-center font-bold mt-5 ${!isSubmitAllowed && !syncing ? "bg-sky-400 " : "bg-gray-600"} text-white text-lg`}
         >Sync Data</button> */}
-      <button 
-        onClick={()=>refreshPage()}
-        disabled={isSubmitAllowed || syncing}
-        className={`p-3 border rounded py-2  justify-center items-center font-bold mt-5 ${!isSubmitAllowed && !syncing ? "bg-sky-400 " : "bg-gray-600"} text-white text-lg`}
-        >Refresh</button>
-      </div>
-            </footer>
-        </main >
-    );
+          <button
+            onClick={() => refreshPage()}
+            disabled={isSubmitAllowed || syncing}
+            className={`p-3 border rounded py-2  justify-center items-center font-bold mt-5 ${!isSubmitAllowed && !syncing ? "bg-sky-400 " : "bg-gray-600"} text-white text-lg`}
+          >Refresh</button>
+        </div>
+      </footer>
+    </main >
+  );
 };
 
 export default Home;
