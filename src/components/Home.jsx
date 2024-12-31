@@ -691,7 +691,7 @@ const Home = () => {
                 onChange={(e) => setScanData(e.target.value)}
                 ref={inputRef}
                 value={scanData}
-                readOnly={allowScan}
+                readOnly={!allowScan}
                 onBlur={() => {
                   if (inputRef && inputRef.current) {
                     if (document.activeElement != inputRef.current)
