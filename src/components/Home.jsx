@@ -32,6 +32,7 @@ const Home = () => {
   const [refresh, setRefresh] = useState(false);
   const [Scales50Kg, setScales50Kg] = useState({});
   const [bruto, setBruto] = useState(0);
+  const [allowScan,setAllowScan] = useState(true);
   const [scanData, setScanData] = useState("");
   const [username, setUsername] = useState("");
   const [neto, setNeto] = useState(0);
@@ -360,12 +361,14 @@ const Home = () => {
   };
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
+      setAllowScan(false);
       if (user == null) handleScan();
       else if (isFinalStep) {
         updateBinWeight();
       } else {
         handleScan1();
       }
+      setAllowScan(true);
     }
   };
 
@@ -688,6 +691,7 @@ const Home = () => {
                 onChange={(e) => setScanData(e.target.value)}
                 ref={inputRef}
                 value={scanData}
+                readOnly={allowScan}
                 onBlur={() => {
                   if (inputRef && inputRef.current) {
                     if (document.activeElement != inputRef.current)
