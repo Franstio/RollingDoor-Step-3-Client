@@ -359,12 +359,12 @@ const Home = () => {
       console.error(error);
     }
   };
-  const handleKeyPress = (e) => {
+  const handleKeyPress = async (e) => {
     if (e.key === "Enter") {
       setAllowScan(false);
       if (user == null) handleScan();
       else if (isFinalStep) {
-        updateBinWeight();
+        await updateBinWeight();
       } else {
         handleScan1();
       }
