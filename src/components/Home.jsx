@@ -251,7 +251,7 @@ const Home = () => {
   };
   const saveTransaksiItem = async (data) => {
   const payloads = [];
-  for (let i=0;<data.length;i++)
+  for (let i=0;i<data.length;i++)
   {
     payloads.push({
         idContainer: data[i].containerId,
