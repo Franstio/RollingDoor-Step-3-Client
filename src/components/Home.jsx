@@ -250,20 +250,23 @@ const Home = () => {
     }
   };
   const saveTransaksiItem = async (data) => {
-    await apiClient.post("http://localhost:5000/SaveTransaksi", {
-      payload: {
-        idContainer: data.containerId,
+  const payloads = [];
+  for (let i=0<data.length;i++;i++)
+  {
+    payloads.push({
+        idContainer: data[i].containerId,
         badgeId: user.badgeId,
-        idWaste: data.idWaste,
-        neto: data.neto,
+        idWaste: data[i].idWaste,
+        neto: data[i].neto,
         binId: selectedBin.id,
-        containerName: data.name,
+        containerName: data[i].name,
         binName: selectedBin.name,
-        status: data.status,
-        isSuccess: data.isSuccess,
+        status: data[i].status,
+        isSuccess: data[i].isSuccess,
         //              createdAt: new Date().toISOString().replace('T', ' ')
-      },
-    });
+      });
+    }
+    await apiClient.post("http://localhost:5000/SaveTransaksi", {payload:payloads});
   };
   const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
 
@@ -419,6 +422,7 @@ const Home = () => {
     const rackTargetName = process.env.REACT_APP_RACK_TARGET_CONTAINER;
     console.log([wasteItems, rackTargetName]);
     const rackTargets = rackTargetName.split(",");
+    const transaksiData = [];
     for (let i = 0; i < wasteItems.length; i++) {
       //let stationname = containerName.split('-').slice(0, 3).join('-');
       if (isOnline) {
@@ -441,7 +445,8 @@ const Home = () => {
             isSuccess: false,
             status: "Pending|PIDSG|1",
           };
-          await saveTransaksiItem(data);
+          transaksiData.push(data);
+//          await saveTransaksiItem(data);
           continue;
         }
         try {
@@ -465,7 +470,8 @@ const Home = () => {
             isSuccess: false,
             status: "Pending|PIDSG|2",
           };
-          await saveTransaksiItem(data);
+          transaksiData.push(data);
+//          await saveTransaksiItem(data);
           continue;
         }
         try {
@@ -485,20 +491,23 @@ const Home = () => {
             isSuccess: false,
             status: "Pending|PIDSG|3",
           };
-          await saveTransaksiItem(data);
+          transaksiData.push(data);
+//          await saveTransaksiItem(data);
           continue;
         }
         const data = { ...wasteItems[i], isSuccess: true, status: "Done" };
-        await saveTransaksiItem(data);
+
+        transaksiData.push(data);
       } else {
         const data = {
           ...wasteItems[i],
           isSuccess: false,
           status: "Pending|PIDSG|1",
         };
-        await saveTransaksiItem(data);
+        transaksiData.push(data);
       }
     }
+    await saveTransaksiItem(transaksiData);
   };
 
   return (
