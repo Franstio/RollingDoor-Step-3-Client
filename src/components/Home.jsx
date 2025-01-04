@@ -442,6 +442,8 @@ const Home = () => {
   useEffect(()=>{
     if (!errData.show)
       setErrData({show:true,message: "Server Disconnecting, Halting Application"});
+    else (errData.show && isServerActive)
+      setErrData({show:false,message:""});
   },[isServerActive]);
   const sendDataPanasonicServer = async () => {
     const rackTargetName = process.env.REACT_APP_RACK_TARGET_CONTAINER;
