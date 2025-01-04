@@ -227,6 +227,7 @@ const Home = () => {
       })
       .catch((err) => {
         setErrData({show:true,message:"Scan Container Failed, API Timeout with No Response"});
+        setIsSubmitAllowed(false);
         setScanData("");
         console.error(err);
       });
@@ -384,6 +385,7 @@ const Home = () => {
   };
   const handleCancelConfirmModal = () => {
     setShowModalConfirmWeight(false);
+    setIsSubmitAllowed(false);
     setFinalStep(true);
     setScanData("");
     //        updateBinWeight();
