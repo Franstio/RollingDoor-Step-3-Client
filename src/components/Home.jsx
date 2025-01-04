@@ -440,7 +440,7 @@ const Home = () => {
     //        updateBinWeightConfirm();
   };
   useEffect(()=>{
-    if (!errData.show)
+    if (!errData.show && !isServerActive)
       setErrData({show:true,message: "Server Disconnecting, Halting Application"});
     else if (errData.show && isServerActive)
       setErrData({show:false,message:""});
