@@ -182,6 +182,7 @@ const Home = () => {
         }
       })
       .catch((err) => {
+        setErrData({show:true,message:"Badge Not Found"});
         setScanData("");
         console.error(err);
       });
@@ -225,6 +226,7 @@ const Home = () => {
         }
       })
       .catch((err) => {
+        setErrData({show:true,message:"Scan Container Failed, API Timeout with No Response"});
         setScanData("");
         console.error(err);
       });
