@@ -43,6 +43,7 @@ const Home = () => {
   const [wasteItems, setWasteItems] = useState([]);
   const [isOnline, setIsOnline] = useState(false);
   const [errData, setErrData] = useState({ show: false, message: "" });
+  const [serverErr, setServerErr] = useState({ show: false, message: "" });
   const [syncing, setSyncing] = useState(false);
   const [ipAddress, setIpAddress] = useState(process.env.REACT_APP_PIDSG);
   const [isServerActive,setServerActive] = useState(true);
@@ -440,10 +441,10 @@ const Home = () => {
     //        updateBinWeightConfirm();
   };
   useEffect(()=>{
-    if (!errData.show && !isServerActive)
-      setErrData({show:true,message: "Server Disconnecting, Halting Application"});
-    else if (errData.show && isServerActive)
-      setErrData({show:false,message:""});
+    if (!serverErr.show && !isServerActive)
+      setServerErr({show:true,message: "Server Disconnecting, Halting Application"});
+    else if (serverErr.show && isServerActive)
+      setServerErr({show:false,message:""});
   },[isServerActive]);
   const sendDataPanasonicServer = async () => {
     const rackTargetName = process.env.REACT_APP_RACK_TARGET_CONTAINER;
@@ -862,6 +863,36 @@ const Home = () => {
                       onClick={() => {
                         setErrData((prev) => ({ show: false, message: '' }));
                         setShowModalConfirmWeight(true);
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mr-2 rounded"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="flex justify-start">
+        {serverErr.show && (
+          <div className="fixed z-10 inset-0 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen">
+              <div
+                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                aria-hidden="true"
+              ></div>
+
+              <div className="bg-white rounded p-8 max-w-md mx-auto z-50">
+                <div className="text-center mb-4"></div>
+                <form>
+                  <p>{serverErr.message}</p>
+                  <div className="flex justify-center mt-5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setServerErr((prev) => ({ show: false, message: '' }));
                       }}
                       className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mr-2 rounded"
                     >
