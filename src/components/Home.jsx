@@ -45,6 +45,7 @@ const Home = () => {
   const [errData, setErrData] = useState({ show: false, message: "" });
   const [syncing, setSyncing] = useState(false);
   const [ipAddress, setIpAddress] = useState(process.env.REACT_APP_PIDSG);
+  const [isServerActive,setServerActive] = useState(true);
   //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
   //    const socket = null;
   const navigation = [
@@ -130,6 +131,17 @@ const Home = () => {
       } catch { }
     });
   }, []);
+  
+  const checkBackendStatus = async ()=>{
+    try {
+      const res = await apiClient.get(`http://localhost:5000/ping`);
+      setServerActive(res.status >= 200 && res.status < 300);
+      return res.status >= 200 && res.status < 300;
+    } catch (er) {
+      setServerActive(false);
+      return false;
+    }
+  }
   useEffect(() => {
     let weight = Scales50Kg?.weight50Kg ?? 0;
     const binWeight = container?.weightbin ?? 0;
@@ -148,6 +160,7 @@ const Home = () => {
       }
     };
     setInterval(() => checkServerStatus(), 3000);
+    setInterval(()=> checkBackendStatus(),3000);
   }, []);
   const triggerAvailableBin = async (valueIsOpen, wasteId) => {
     try {
@@ -426,12 +439,17 @@ const Home = () => {
     setShowModalConfirmWeight(false);
     //        updateBinWeightConfirm();
   };
-
+  useEffect(()=>{
+    if (!errData.show)
+      setErrData({show:true,message: "Server Disconnecting, Halting Application"});
+  },[isServerActive]);
   const sendDataPanasonicServer = async () => {
     const rackTargetName = process.env.REACT_APP_RACK_TARGET_CONTAINER;
     console.log([wasteItems, rackTargetName]);
     const rackTargets = rackTargetName.split(",");
     const transaksiData = [];
+    if (!await checkBackendStatus())
+      return;
     for (let i = 0; i < wasteItems.length; i++) {
       //let stationname = containerName.split('-').slice(0, 3).join('-');
       if (isOnline) {
