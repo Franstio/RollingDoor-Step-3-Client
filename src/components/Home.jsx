@@ -174,7 +174,7 @@ const Home = () => {
             setUser(res.data.user);
             setScanData("");
           } else {
-            alert("User not found");
+            setErrData({show:true,message:"Badge Not Found"});
             setUser(null);
             setContainerName(res.data.name || "");
             setScanData("");
@@ -188,7 +188,7 @@ const Home = () => {
       });
   };
 
-  const handleScan1 = () => {
+  const handleScan1 =async () => {
     const check = wasteItems.findIndex(
       (x) => x.name.toLowerCase() == scanData.toLowerCase()
     );
@@ -199,12 +199,15 @@ const Home = () => {
       }));
       return;
     }
-    apiClient
-      .post("http://localhost:5000/ScanContainer", { containerId: scanData })
-      .then((res) => {
-        setScanData("");
+    try
+    {
+      const res = await apiClient.post("http://localhost:5000/ScanContainer", { containerId: scanData });
+      setScanData("");
         if (res.data.error) {
-          alert(res.data.error);
+          setErrData({show:true,message:res.data.error});s
+          setScanData('');
+          setIsSubmitAllowed(false);
+          setContainer(null);
         } else {
           if (res.data.container) {
             if (res.data.container.idWaste != wasteId && wasteId != null) {
@@ -224,13 +227,15 @@ const Home = () => {
             setIsSubmitAllowed(false);
           }
         }
-      })
-      .catch((err) => {
-        setErrData({show:true,message:"Scan Container Failed, API Timeout with No Response"});
-        setIsSubmitAllowed(false);
-        setScanData("");
-        console.error(err);
-      });
+    }
+    catch (err)
+    {      
+      setErrData({show:true,message:"Scan Container Failed, API Timeout with No Response"});
+      setContainer(null);
+      setIsSubmitAllowed(false);
+      setScanData("");
+      console.error(err);
+    }
   };
   const handleSubmit = () => {
     CheckBinCapacity();
