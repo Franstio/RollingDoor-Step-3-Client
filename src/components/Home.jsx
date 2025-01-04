@@ -204,7 +204,7 @@ const Home = () => {
       const res = await apiClient.post("http://localhost:5000/ScanContainer", { containerId: scanData });
       setScanData("");
         if (res.data.error) {
-          setErrData({show:true,message:res.data.error});s
+          setErrData({show:true,message:res.data.error});
           setScanData('');
           setIsSubmitAllowed(false);
           setContainer(null);
