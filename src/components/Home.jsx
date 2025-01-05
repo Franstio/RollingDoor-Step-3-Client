@@ -161,7 +161,8 @@ const Home = () => {
       }
     };
     setInterval(() => checkServerStatus(), 3000);
-    setInterval(()=> checkBackendStatus(),3000);
+    if (process.env.REACT_APP_AUTO_CHECK)
+      setInterval(()=> checkBackendStatus(),3000);
   }, []);
   const triggerAvailableBin = async (valueIsOpen, wasteId) => {
     try {
@@ -452,7 +453,10 @@ const Home = () => {
     const rackTargets = rackTargetName.split(",");
     const transaksiData = [];
     if (!await checkBackendStatus())
-      return;
+    {
+        setServerErr({message: "Server Disconnected, Please Verification again.", show: true});
+        return;
+    }
     for (let i = 0; i < wasteItems.length; i++) {
       //let stationname = containerName.split('-').slice(0, 3).join('-');
       if (isOnline) {
