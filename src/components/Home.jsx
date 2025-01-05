@@ -161,7 +161,7 @@ const Home = () => {
       }
     };
     setInterval(() => checkServerStatus(), 3000);
-    if (process.env.REACT_APP_AUTO_CHECK)
+    if (process.env.REACT_APP_AUTO_CHECK==1)
       setInterval(()=> checkBackendStatus(),3000);
   }, []);
   const triggerAvailableBin = async (valueIsOpen, wasteId) => {
