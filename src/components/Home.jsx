@@ -295,6 +295,12 @@ const Home = () => {
 
   const getTotalNetoWeight = () => wasteItems.reduce((a, b) => a + b.neto, 0);
   const CheckBinCapacity = async () => {
+    if (!await CheckBinCapacity())
+    {
+      setServerErr({message:"Server Disconnect. Please Verification Again",show:true});
+      setScanData('');
+      return;
+    }
     try {
       setShowModal(false);
       freezeNeto(false);
@@ -333,11 +339,18 @@ const Home = () => {
       //            saveTransaksi();
     } catch (error) {
       console.error(error);
+      setScanData('');
     }
   };
 
   const updateBinWeight = async () => {
     try {
+      if (!await checkBackendStatus())
+      {
+        setServerErr({message:"Server Disconnect. Please Verification Again",show:true});
+        setScanData('');
+        return;
+      }
       const response = await apiClient.post(
         "http://localhost:5000/UpdateBinWeight",
         {
@@ -455,6 +468,7 @@ const Home = () => {
     if (!await checkBackendStatus())
     {
         setServerErr({message: "Server Disconnected, Please Verification again.", show: true});
+        setScanData('');
         return;
     }
     for (let i = 0; i < wasteItems.length; i++) {
