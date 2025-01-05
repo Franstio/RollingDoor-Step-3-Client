@@ -295,7 +295,7 @@ const Home = () => {
 
   const getTotalNetoWeight = () => wasteItems.reduce((a, b) => a + b.neto, 0);
   const CheckBinCapacity = async () => {
-    if (!await CheckBinCapacity())
+    if (!await checkBackendStatus())
     {
       setServerErr({message:"Server Disconnect. Please Verification Again",show:true});
       setScanData('');
