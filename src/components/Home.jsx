@@ -74,6 +74,7 @@ const Home = () => {
         if (document.activeElement != inputRef.current)
           inputRef.current.focus();
       }
+      console.log(wasteItems);
       const findInvalid = wasteItems.findIndex(x=>x.name == "" || x.name == null || x.name == undefined) ;
       console.log(findInvalid);
       if (findInvalid != -1)
