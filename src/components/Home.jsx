@@ -63,24 +63,28 @@ const Home = () => {
   const [selectedBin, setSelectedBin] = useState({});
   const [checkInputInverval, setCheckInputInterval] = useState(null);
   const inputRef = useRef(null);
-  const timerRef = useRef(null);
   const toggleModal = () => {
     freezeNeto(true);
     setShowModal(!showModal);
   };
+  
   const updateFocus = () => {
     if (inputRef && inputRef.current) {
       if (document.activeElement != inputRef.current)
         inputRef.current.focus();
     }
+    let tempList = [];
     console.log(wasteItems);
-    const findInvalid = wasteItems.findIndex(x=>x.name == "" || x.name == null || x.name == undefined) ;
+    setWasteItems((old)=>{
+      tempList = [...old];
+      return old;
+    });
+    const findInvalid = tempList.findIndex(x=>x.name == "" || x.name == null || x.name == undefined) ;
     console.log(findInvalid);
     if (findInvalid != -1)
     {
         // setServerErr({message: "Waste Items Invalid, Removing Invalid Container From List.", show: true});
         // setScanData('');
-        const tempList = [...wasteItems];
         tempList.splice(findInvalid,1);
         console.log(tempList);
         setWasteItems([...tempList]);
@@ -88,9 +92,8 @@ const Home = () => {
     }
   };
   useEffect(() => {
-    if (checkInputInverval != null) clearInterval(checkInputInverval);
-    timerRef.current = setInterval(updateFocus,1000);
-    setCheckInputInterval(timerRef.current);
+    setCheckInputInterval( setInterval(updateFocus,1000));
+    return ()=> clearInterval(checkInputInverval)
   }, []);
   /*const toggleModalConfirm = () => {
         setShowModalConfirmWeight(!showModalConfirmWeight);
