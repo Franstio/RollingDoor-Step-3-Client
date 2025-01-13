@@ -74,6 +74,16 @@ const Home = () => {
         if (document.activeElement != inputRef.current)
           inputRef.current.focus();
       }
+      const findInvalid = wasteItems.findIndex(x=>x.name == "" || x.name == null || x.name == undefined) ;
+      if (findInvalid != -1)
+      {
+          setServerErr({message: "Waste Items Invalid, Removing Invalid Container From List.", show: true});
+          setScanData('');
+          const tempList = [...wasteItems];
+          tempList.splice(findInvalid,1);
+          setWasteItems(tempList);
+          return;
+      }
     };
     if (checkInputInverval != null) clearInterval(checkInputInverval);
     setCheckInputInterval(setInterval(updateFocus, 10000));
@@ -234,7 +244,7 @@ const Home = () => {
             setScanData("");
             setIsSubmitAllowed(true);
           } else {
-            alert("Countainer not found");
+            alert("Container not found");
             setUser(null);
             setContainer(null);
             setContainerName(res.data.name || "");
