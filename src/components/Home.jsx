@@ -80,7 +80,7 @@ const Home = () => {
           // setServerErr({message: "Waste Items Invalid, Removing Invalid Container From List.", show: true});
           // setScanData('');
           const tempList = [...wasteItems];
-          tempList.splice(findInvalid,1);
+          tempList = tempList.splice(findInvalid,1);
           setWasteItems(tempList);
           return;
       }
