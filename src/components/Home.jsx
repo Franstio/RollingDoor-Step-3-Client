@@ -74,11 +74,11 @@ const Home = () => {
         inputRef.current.focus();
     }
     let tempList = [];
-    console.log(wasteItems);
     setWasteItems((old)=>{
       tempList = [...old];
       return old;
     });
+    console.log(tempList);
     const findInvalid = tempList.findIndex(x=>x.name == "" || x.name == null || x.name == undefined) ;
     console.log(findInvalid);
     if (findInvalid != -1)
