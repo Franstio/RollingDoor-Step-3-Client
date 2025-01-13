@@ -63,6 +63,7 @@ const Home = () => {
   const [selectedBin, setSelectedBin] = useState({});
   const [checkInputInverval, setCheckInputInterval] = useState(null);
   const inputRef = useRef(null);
+  const timerRef = useRef(null);
   const toggleModal = () => {
     freezeNeto(true);
     setShowModal(!showModal);
@@ -87,9 +88,9 @@ const Home = () => {
     }
   };
   useEffect(() => {
-    
     if (checkInputInverval != null) clearInterval(checkInputInverval);
-    setCheckInputInterval(setInterval(updateFocus, 10000));
+    timerRef.current = setInterval(updateFocus,1000);
+    setCheckInputInterval(timerRef.current);
   }, []);
   /*const toggleModalConfirm = () => {
         setShowModalConfirmWeight(!showModalConfirmWeight);
