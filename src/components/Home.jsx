@@ -468,6 +468,7 @@ const Home = () => {
     setContainer(null);
     setScanData("");
     setFinalStep(false);
+    setIsSubmitAllowed(false);
     setShowModalConfirmWeight(false);
     //        updateBinWeightConfirm();
   };
