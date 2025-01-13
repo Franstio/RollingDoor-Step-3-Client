@@ -75,13 +75,15 @@ const Home = () => {
           inputRef.current.focus();
       }
       const findInvalid = wasteItems.findIndex(x=>x.name == "" || x.name == null || x.name == undefined) ;
+      console.log(findInvalid);
       if (findInvalid != -1)
       {
           // setServerErr({message: "Waste Items Invalid, Removing Invalid Container From List.", show: true});
           // setScanData('');
           const tempList = [...wasteItems];
           tempList = tempList.splice(findInvalid,1);
-          setWasteItems(tempList);
+          console.log(tempList);
+          setWasteItems([...tempList]);
           return;
       }
     };
