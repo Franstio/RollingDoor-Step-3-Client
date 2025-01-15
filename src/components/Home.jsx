@@ -421,11 +421,9 @@ const Home = () => {
       if (user == null) handleScan();
       else if (isFinalStep) {
         if (targetRollingDoor.name.toLowerCase() != scanData.toLowerCase())
-        {
           setServerErr({message:"Invalid Bin Name",show:true});
-          return;
-        }
-        await updateBinWeight();
+        else
+          await updateBinWeight();
       } else {
         handleScan1();
       }
@@ -847,7 +845,7 @@ const Home = () => {
       </div>
 
       <div className="flex justify-start">
-        {showModalConfirmWeight && (
+        {showModalConfirmWeight && targetRollingDoor && (
           <div className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen">
               <div
@@ -860,7 +858,7 @@ const Home = () => {
                 <form>
                   <Typography variant="h6" align="center" gutterBottom>
                     <p>Data Timbangan Telah DiSave!</p>
-                    <p>Rolling Door {targetRollingDoor.id} Telah Dibuka!</p>
+                    <p>Rolling Door {targetRollingDoor?.id } Telah Dibuka!</p>
                   </Typography>
                   <p>Ingin Menimbang lagi ??</p>
                   <div className="flex justify-center mt-5">
