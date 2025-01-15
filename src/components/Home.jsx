@@ -421,7 +421,10 @@ const Home = () => {
       if (user == null) handleScan();
       else if (isFinalStep) {
         if (targetRollingDoor.name.toLowerCase() != scanData.toLowerCase())
+        {
           setServerErr({message:"Invalid Bin Name",show:true});
+          setScanData('');
+        }
         else
           await updateBinWeight();
       } else {
