@@ -338,6 +338,8 @@ const Home = () => {
           alert(res.message);
           return;
         }
+        if (wasteId == null)
+          setWasteId(res.data.container.idWaste);
         maxWeight = res.bin.max_weight;
         setTargetRollingDoor(res.bin);
         setSelectedBin(res.bin);
@@ -388,6 +390,7 @@ const Home = () => {
       setFinalStep(false);
       setIsSubmitAllowed(false);
       setWasteItems([]);
+      setWasteId(null);
     } catch (error) {
       setScanData("");
       console.error(error);
