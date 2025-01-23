@@ -78,9 +78,7 @@ const Home = () => {
       tempList = [...old];
       return old;
     });
-    console.log(tempList);
     const findInvalid = tempList.findIndex(x=>x.name == "" || x.name == null || x.name == undefined) ;
-    console.log(findInvalid);
     if (findInvalid != -1)
     {
         // setServerErr({message: "Waste Items Invalid, Removing Invalid Container From List.", show: true});
