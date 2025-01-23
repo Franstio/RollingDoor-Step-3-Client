@@ -338,7 +338,7 @@ const Home = () => {
           return;
         }
         if (wasteId == null)
-          setWasteId(res.data.container.idWaste);
+          setWasteId(container.idWaste);
         maxWeight = res.bin.max_weight;
         setTargetRollingDoor(res.bin);
         setSelectedBin(res.bin);
