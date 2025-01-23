@@ -242,7 +242,10 @@ const Home = () => {
         } else {
           if (res.data.container) {
             if (res.data.container.idWaste != wasteId && wasteId != null) {
-              alert("Waste  Mismatch");
+        //      alert("Waste  Mismatch");
+              
+              setServerErr({message:"Waste Mismatch",show:true});
+              setScanData('');
               return;
             }
             setContainer(res.data.container);
@@ -347,7 +350,9 @@ const Home = () => {
         totalWeight =
           parseFloat(selectedBin.weight) + totalWeight + getTotalNetoWeight();
       if (totalWeight > parseFloat(maxWeight)) {
-        alert("Bin Penuh");
+        
+        setServerErr({message:"Bin Penuh",show:true});
+        setScanData('');
         // setErrorMessage('bin penuh.');
         return null;
       }
