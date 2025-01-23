@@ -244,7 +244,7 @@ const Home = () => {
             if (res.data.container.idWaste != wasteId && wasteId != null) {
         //      alert("Waste  Mismatch");
               
-              setServerErr({message:"Waste Mismatch",show:true});
+              setErrData({message:"Waste Mismatch",show:true});
               setScanData('');
               return;
             }
@@ -351,7 +351,7 @@ const Home = () => {
           parseFloat(selectedBin.weight) + totalWeight + getTotalNetoWeight();
       if (totalWeight > parseFloat(maxWeight)) {
         
-        setServerErr({message:"Bin Penuh",show:true});
+        setErrData({message:"Bin Penuh",show:true});
         setScanData('');
         // setErrorMessage('bin penuh.');
         return null;
