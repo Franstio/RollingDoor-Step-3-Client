@@ -505,32 +505,10 @@ const Home = () => {
     for (let i = 0; i < wasteItems.length; i++) {
       //let stationname = containerName.split('-').slice(0, 3).join('-');
       if (isOnline) {
-        try {
-          if (rackTargets.includes(wasteItems[i].name)) {
-            const weightResponse = await apiClient.post(
-              `http://${process.env.REACT_APP_PIDSG}/api/pid/sendWeight`,
-              {
-                binname: wasteItems[i].name,
-                weight: wasteItems[i].step2value,
-              }
-            );
-            console.log([weightResponse.data, weightResponse.status]);
-          }
-        }
-        catch (error) {
-          console.log(error);
-          const data = {
-            ...wasteItems[i],
-            isSuccess: false,
-            status: "Pending|PIDSG|1",
-          };
-          transaksiData.push(data);
-//          await saveTransaksiItem(data);
-          continue;
-        }
+        
         try {
           const response = await apiClient.post(
-            `http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogTempbyPc`,
+            `http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbyPcAll`,
             {
               badgeno: user.badgeId,
               stationname: "STEP 3 COLLECTION",
@@ -539,27 +517,10 @@ const Home = () => {
               activity: "Movement by System",
               filename: null,
               postby: "Local Step 3",
-            }
-          );
-        }
-        catch (error) {
-          console.log(error);
-          const data = {
-            ...wasteItems[i],
-            isSuccess: false,
-            status: "Pending|PIDSG|2",
-          };
-          transaksiData.push(data);
-//          await saveTransaksiItem(data);
-          continue;
-        }
-        try {
-          const response2 = await apiClient.post(
-            `http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbypc`,
-            {
-              stationname: "STEP 3 COLLECTION",
-              frombin: wasteItems[i].name,
               tobin: selectedBin.name ?? "",
+              postDate: '',
+              binname:rackTargets.includes(wasteItems[i].name) ?  wasteItems[i].name : '',
+              step2value: rackTargets.includes(wasteItems[i].name) ? wasteItems[i].step2value : '',
             }
           );
         }
@@ -568,7 +529,7 @@ const Home = () => {
           const data = {
             ...wasteItems[i],
             isSuccess: false,
-            status: "Pending|PIDSG|3",
+            status: "Pending|PIDSG|1",
           };
           transaksiData.push(data);
 //          await saveTransaksiItem(data);
