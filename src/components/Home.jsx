@@ -506,36 +506,7 @@ const Home = () => {
       //let stationname = containerName.split('-').slice(0, 3).join('-');
       if (isOnline) {
         
-        try {
-          const response = await apiClient.post(
-            `http://${process.env.REACT_APP_PIDSG}/api/pid/activityLogbyPcAll`,
-            {
-              badgeno: user.badgeId,
-              stationname: "STEP 3 COLLECTION",
-              frombin: wasteItems[i].name, //"2-PCS-5",
-              weight: wasteItems[i].weight,
-              activity: "Movement by System",
-              filename: null,
-              postby: "Local Step 3",
-              tobin: selectedBin.name ?? "",
-              postDate: '',
-              binname:rackTargets.includes(wasteItems[i].name) ?  wasteItems[i].name : '',
-              step2value: rackTargets.includes(wasteItems[i].name) ? wasteItems[i].step2value : '',
-            }
-          );
-        }
-        catch (error) {
-          console.log(error);
-          const data = {
-            ...wasteItems[i],
-            isSuccess: false,
-            status: "Pending|PIDSG|1",
-          };
-          transaksiData.push(data);
-//          await saveTransaksiItem(data);
-          continue;
-        }
-        const data = { ...wasteItems[i], isSuccess: true, status: "Done" };
+        const data = { ...wasteItems[i], isSuccess: false, status: "Pending" };
 
         transaksiData.push(data);
       } else {
