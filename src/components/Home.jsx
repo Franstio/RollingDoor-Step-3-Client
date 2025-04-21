@@ -308,7 +308,14 @@ const Home = () => {
         //              createdAt: new Date().toISOString().replace('T', ' ')
       });
     }
-    await apiClient.post("http://localhost:5000/SaveTransaksi", {payload:payloads});
+    try
+    {
+      await apiClient.post("http://localhost:5000/SaveTransaksi", {payload:payloads},{timeout:15000});
+    }
+    catch (er)
+    {
+      console.log(er);
+    }
   };
   const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
 
@@ -374,13 +381,23 @@ const Home = () => {
         setScanData('');
         return;
       }
-      const response = await apiClient.post(
-        "http://localhost:5000/UpdateBinWeight",
-        {
-          binId: targetRollingDoor.id,
-          neto: getTotalNetoWeight(),
-        }
-      );
+      try
+      {
+          await apiClient.post(
+          "http://localhost:5000/UpdateBinWeight",
+          {
+            binId: targetRollingDoor.id,
+            neto: getTotalNetoWeight(),
+          },
+          {
+            timeout:15000
+          }
+        );
+      }
+      catch (er)
+      {
+        console.log(er);
+      }
       await triggerAvailableBin(false, wasteItems[0].idWaste);
       await sendDataPanasonicServer();
       //            await sendDataPanasonicServer1();
