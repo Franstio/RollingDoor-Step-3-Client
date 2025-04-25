@@ -47,6 +47,7 @@ const Home = () => {
   const [syncing, setSyncing] = useState(false);
   const [ipAddress, setIpAddress] = useState(process.env.REACT_APP_PIDSG);
   const [isServerActive,setServerActive] = useState(true);
+  const [doorData,setDoorData] = useState([]);
   //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
   //    const socket = null;
   const navigation = [
@@ -67,7 +68,21 @@ const Home = () => {
     freezeNeto(true);
     setShowModal(!showModal);
   };
-  
+  const rowClass = "border text-center text-gray-800";
+  useEffect(()=>{
+    const getDoorData = async ()=>{
+      try
+      {
+        const res = await apiClient.get(`http://localhost:5000/door`);
+        setDoorData(res.data);
+      }
+      catch (er)
+      {
+        console.log(er);
+      }
+    };
+    getDoorData();
+  },[])
   const updateFocus = () => {
     if (inputRef && inputRef.current) {
       if (document.activeElement != inputRef.current)
@@ -333,6 +348,7 @@ const Home = () => {
       let maxWeight = selectedBin?.max_weight ?? 0;
       const binWeight = container?.weightbin ?? 0;
       let totalWeight = parseFloat(neto);
+      let binData = selectedBin;
       if (wasteItems.length < 1) {
         const response = await apiClient.post(
           "http://localhost:5000/CheckBinCapacity",
@@ -352,7 +368,8 @@ const Home = () => {
         maxWeight = res.bin.max_weight;
         setTargetRollingDoor(res.bin);
         setSelectedBin(res.bin);
-        totalWeight = res.bin.weight + totalWeight;
+        totalWeight = parseFloat(res.bin.weight) + totalWeight;
+        binData = res.bin;
       } else
         totalWeight =
           parseFloat(selectedBin.weight) + totalWeight + getTotalNetoWeight();
@@ -362,6 +379,13 @@ const Home = () => {
         setScanData('');
         // setErrorMessage('bin penuh.');
         return null;
+      }
+      const indexData = doorData.findIndex(x=>x.name==binData.name);
+      if (indexData != -1)
+      {
+        const newDoor = [...doorData];
+        newDoor[indexData].weight = totalWeight;
+        setDoorData([...newDoor]);
       }
       setWasteItems([...wasteItems, { ...container, weight: bruto, neto: neto }]);
       setShowModalConfirmWeight(true);
@@ -763,6 +787,30 @@ const Home = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="flex flex-row justify-center  align-items-center  p-3">
+        <table className="table rounded border-collapse w-1/2 table-auto">
+          <thead className="bg-sky-400 text-white  text-center">
+            <tr className="border">
+                  <th>No</th>
+                  <th>Rolling Door Name</th>
+                  <th>Current Weight</th>
+                  <th>Capacity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              doorData.map(door=>(
+                <tr >
+                    <td className={rowClass}>{door.no}</td>
+                    <td className={rowClass}>{door.name}</td>
+                    <td className={rowClass}>{parseFloat( door.weight).toFixed(2)}</td>
+                    <td className={rowClass}>{door.capacity}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
       </div>
       <div className="flex justify-start">
         {showModal && (
