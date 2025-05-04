@@ -218,7 +218,7 @@ const Home = () => {
         } else {
           if (res.data.user) {
             setUser(res.data.user);
-            setLoginDate(formatDate(new Date().toISOString()));
+            setLoginDate(moment(new Date().toISOString()).format('YYYY-MM-DD HH:mm:ss'));
             setScanData("");
           } else {
             setErrData({show:true,message:"Badge Not Found"});
