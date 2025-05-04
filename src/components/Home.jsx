@@ -46,6 +46,7 @@ const Home = () => {
   const [serverErr, setServerErr] = useState({ show: false, message: "" });
   const [syncing, setSyncing] = useState(false);
   const [ipAddress, setIpAddress] = useState(process.env.REACT_APP_PIDSG);
+  const [loginDate,setLoginDate] = useState(null);
   const [isServerActive,setServerActive] = useState(true);
   const [doorData,setDoorData] = useState([]);
   //const [socket,setSocket] = useState(io('http://localhost:5000/')); // Sesuaikan dengan alamat server
@@ -217,6 +218,7 @@ const Home = () => {
         } else {
           if (res.data.user) {
             setUser(res.data.user);
+            setLoginDate(formatDate(new Date().toISOString()));
             setScanData("");
           } else {
             setErrData({show:true,message:"Badge Not Found"});
@@ -320,6 +322,7 @@ const Home = () => {
         binName: selectedBin.name,
         status: data[i].status,
         isSuccess: data[i].isSuccess,
+        loginDate: loginDate
         //              createdAt: new Date().toISOString().replace('T', ' ')
       });
     }
@@ -525,6 +528,18 @@ const Home = () => {
     setIsSubmitAllowed(false);
     setShowModalConfirmWeight(false);
     //        updateBinWeightConfirm();
+  };
+  
+  const formatDate = (date) => {
+    let d = new Date(date),
+      month = "" + (d.getMonth() + 1),
+      day = "" + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+
+    return [year, month, day].join("-");
   };
   useEffect(()=>{
     if (!serverErr.show && !isServerActive)
