@@ -219,8 +219,6 @@ const Home = () => {
         } else {
           if (res.data.user) {
             setUser(res.data.user);
-            const dts = [...loginDate,moment(new Date().toISOString()).format('YYYY-MM-DD HH:mm:ss')];
-            setLoginDate(dts);
             setScanData("");
           } else {
             setErrData({show:true,message:"Badge Not Found"});
@@ -267,6 +265,9 @@ const Home = () => {
               setScanData('');
               return;
             }
+            
+            const dts = [...loginDate,moment(new Date().toISOString()).format('YYYY-MM-DD HH:mm:ss')];
+            setLoginDate(dts);
             setContainer(res.data.container);
             triggerAvailableBin(true, res.data.container.idWaste);
             setScanData("");
