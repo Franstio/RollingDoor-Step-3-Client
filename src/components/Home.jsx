@@ -19,15 +19,17 @@ import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
 import axios from "axios";
-import io from "socket.io-client";
+//import io from "socket.io-client";
+import * as signalR from '@microsoft/signalr';
 const apiClient = axios.create({
   withCredentials: false,
   timeout: 5000,
 });
-const socket = io("http://localhost:5000/", {
-  autoConnect: true,
-  reconnection: true,
-});
+// const socket = io("http://localhost:5000/", {
+//   autoConnect: true,
+//   reconnection: true,
+// });
+const socket = new signalR.HubConnectionBuilder().withUrl("http://localhost:5000/scales-hub").withAutomaticReconnect().build();
 
 const Home = () => {
   const [refresh, setRefresh] = useState(false);
@@ -153,8 +155,9 @@ const Home = () => {
   };
 
   useEffect(() => {
-    socket.emit("connectScale");
-    socket.on("data", (weight50Kg) => {
+    if (socket.state === signalR.HubConnectionState.Disconnected) 
+            socket.start();
+    socket.on("SendScaleData", (weight50Kg) => {
       try {
         weight50Kg.weight50Kg =
           weight50Kg && weight50Kg.weight50Kg
@@ -1005,7 +1008,7 @@ const Home = () => {
       </div>
       <footer className='flex-1 rounded border flex-col justify-center gap-40 p-3 bg-white'  >
         <p className="text-center">Server Status: {ipAddress} {isOnline ? "Online" : "Offline"}</p>
-        <p className="text-center">Status PLC : {socket?.connected ? "Online" : "Offline"}</p>
+        <p className="text-center">Status PLC : {socket?.state == signalR.HubConnectionState.Connected ? "Online" : "Offline"}</p>
 
         <div className="flex gap-3 flex-row w-100 justify-end">
           {/* <button 
