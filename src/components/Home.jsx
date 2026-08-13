@@ -13,6 +13,7 @@ import {
   CircularProgress,
   Grid,
 } from "@mui/material";
+import * as signalR from '@microsoft/signalr';
 import { styled } from "@mui/material/styles";
 import LinearProgress, {
   linearProgressClasses,
@@ -23,10 +24,7 @@ const apiClient = axios.create({
   withCredentials: false,
   timeout: 5000,
 });
-const socket = io("http://localhost:5000/", {
-  autoConnect: true,
-  reconnection: true,
-});
+const socket = new signalR.HubConnectionBuilder().withUrl("http://localhost:5000/scales-hub").withAutomaticReconnect().build();
 
 const Home = () => {
   const [refresh, setRefresh] = useState(false);
@@ -135,15 +133,16 @@ const Home = () => {
     );
   };
 
-  useEffect(() => {
-    socket.emit("connectScale");
-    socket.on("data", (weight50Kg) => {
-      try {
+    useEffect(() => {
+        if (socket.state === signalR.HubConnectionState.Disconnected) 
+            socket.start();
+      socket.on("SendScaleData", (weight50Kg) => {
+          try {
         weight50Kg.weight50Kg =
           weight50Kg && weight50Kg.weight50Kg
             ? parseFloat(weight50Kg.weight50Kg.replace("=", "") ?? "0")
             : 0;
-        setScales50Kg(weight50Kg);
+              setScales50Kg(weight50Kg);
       } catch { }
     });
   }, []);
