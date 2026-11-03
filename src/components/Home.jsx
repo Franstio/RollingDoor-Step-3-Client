@@ -344,6 +344,20 @@ const Home = () => {
   const getTotalWeight = () => wasteItems.reduce((a, b) => a + b.weight, 0);
 
   const getTotalNetoWeight = () => wasteItems.reduce((a, b) => a + b.neto, 0);
+
+  const checkDifferenceWeight = async (_containerName) => {
+        const response = await apiClient.post(
+          `http://localhost:5000/Step2Check/${_containerName}`,
+          {
+            weight: neto,
+          },{validateStatus: () => true}
+        );
+        if (response.status == 400)
+        {
+          setErrData({message:"Perbedaan Berat melebihi 3%. Tekan continue untuk melanjutkan proses pembuangan",show:true});
+        }
+  }
+
   const CheckBinCapacity = async () => {
     if (!await checkBackendStatus())
     {
@@ -351,6 +365,7 @@ const Home = () => {
       setScanData('');
       return;
     }
+    await checkDifferenceWeight(container.name);
     try {
       setShowModal(false);
       freezeNeto(false);
